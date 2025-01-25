@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        custom: ['"ZSFT-ENMIN-184"'], // 自定义字体名
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            @font-face {
+                font-family: 'ZSFT-ENMIN-184';
+                src: url('https://static.zeoseven.com/zsft/184/main.woff2') format('woff2'),
+                url('https://static-host.zeoseven.com/zsft/184/main.woff2') format('woff2');
+                unicode-range: U+0061-007A, U+0041-005A, U+0030-0039, U+FF0C, U+3002, U+002E, U+002C, U+0021, U+003F, U+003A, U+003B, U+002D, U+FF01, U+FF1F;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="grid h-[25rem] w-[18.75rem] grid-cols-9 grid-rows-9 bg-gray-400 text-white font-serif">
+    <div class="row-span-1 col-span-5 text-gray-300 text-[0.4rem]"></div>
+    <div class="row-span-1 col-span-4 text-gray-200 text-left mr-3 mt-2 grid grid-rows-3 grid-cols-10">
+        <div class="col-start-3 col-span-2 flex items-end -mb-2 -mr-1">
+            <img src="https://img.atcoder.jp/logo/atcoder/logo_transparent.png" alt=""  class="tailwind-classes size">
+        </div>
+        <div class=" col-span-6 text-sm font-semibold -mt-[2px] ml-2">AtCoder</div>
+    </div>
+    <div class="col-span-9 shadow-md shadow-black row-start-4 m-3 -mt-10 grid h-[7.4rem] grid-rows-5 rounded-lg bg-black">
+                <div class="row-span-2 row-start-3 text-center text-2xl text-white -mt-1">{{.Handle}}</div>
+        <div class="row-span-1 row-start-5 grid grid-cols-2">
+            <div class="col-span-1 row-span-1 -mt-3 mb-3 ml-[12px] mr-[6px] h-6 rounded-lg bg-gray-200 bg-opacity-50 text-center text-sm shadow-sm">
+                <div class="m-1 flex items-center justify-center text-xs">
+                    <!-- 星形图标 -->
+                    <svg t="1731661770446" class="icon mr-1" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="14258" width="12" height="12"><path d="M928.024 508.595l-351.13 254.683L362.98 604.702 148.886 733.977V578.793l225.317-312.316L577.95 519.764l350.074-395.34z" fill="#1296db" p-id="14259" data-spm-anchor-id="a313x.search_index.0.i20.1b813a81J9rHHH" class=""></path><path d="M918.762 834.853H139.625V733.331l225.317-108.398 203.747 145.961L918.762 491.85z" fill="#13227a" p-id="14260" data-spm-anchor-id="a313x.search_index.0.i22.1b813a81J9rHHH" class="selected"></path><path d="M959.159 928.219H64.063V98.125h37.045v787.166h858.051z" fill="#13227a" p-id="14261" data-spm-anchor-id="a313x.search_index.0.i27.1b813a81J9rHHH" class="selected"></path><path d="M580.658 796.245L369.686 628.169 158.642 760.785l-17.659-37.737 230.991-145.15 208.508 166.113 334.054-270.609 21.225 35.183z" fill="#1296db" p-id="14262"></path><path d="M152.112 601.753l-28.68-27.17L360.23 238.944 569.003 494.92 903.52 103.683l26.316 30.213-361.462 422.75L362.245 303.91z" fill="#1296db" p-id="14263" data-spm-anchor-id="a313x.search_index.0.i21.1b813a81J9rHHH" class=""></path></svg>
+                            Max Rating {{.MaxRating}}
+                </div>
+            </div>
+            <div class="col-span-1 row-span-1 -mt-3 mb-3 ml-[6px] mr-[12px] h-6 rounded-lg bg-gray-200 bg-opacity-50 text-center text-sm shadow-sm">
+                <div class="m-1 flex items-center justify-center text-xs">
+                     <!--promotion icon -->
+<svg class="icon" style="width: 1em; height: 1em; vertical-align: middle; fill: currentColor; overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="20716">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur" />
+      <feOffset in="blur" dx="3" dy="3" result="offsetBlur" />
+      <feMerge>
+        <feMergeNode in="offsetBlur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <path d="M962.837896 820.742385l-443.704493-204.786689a16.894902 16.894902 0 0 0-14.300937 0l-443.704493 204.786689a17.065557 17.065557 0 0 0-9.898023 15.495526v170.655574a17.099689 17.099689 0 0 0 24.19896 15.495526L512 820.913041l436.57109 201.47597a16.82664 16.82664 0 0 0 16.348804-1.126326 17.099689 17.099689 0 0 0 7.850156-14.3692v-170.655574a17.065557 17.065557 0 0 0-9.932154-15.495526z m0-307.180033l-443.704493-204.786689a16.894902 16.894902 0 0 0-14.300937 0l-443.704493 204.786689a17.065557 17.065557 0 0 0-9.898023 15.495526v170.655574a17.099689 17.099689 0 0 0 24.19896 15.495526L512 513.733007l436.57109 201.475971a16.82664 16.82664 0 0 0 16.348804-1.126327 17.099689 17.099689 0 0 0 7.850156-14.369199v-170.655574a17.065557 17.065557 0 0 0-9.932154-15.495526z m0-307.180034l-443.704493-204.786688a16.894902 16.894902 0 0 0-14.300937 0l-443.704493 204.786688a17.065557 17.065557 0 0 0-9.898023 15.495527v170.655574a17.099689 17.099689 0 0 0 24.19896 15.495526L512 206.552974l436.57109 201.475971a16.82664 16.82664 0 0 0 16.348804-1.126327 17.099689 17.099689 0 0 0 7.850156-14.369199v-170.655574a17.065557 17.065557 0 0 0-9.932154-15.495527z"
+        fill="url(#gradient)"
+        filter="url(#shadow)"
+        p-id="20717">
+  </path>
+</svg>
+<!-- promotion icon -->
+                 {{.PromotionMessage}}
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="col-span-3 col-start-4 row-start-3 -mt-12 h-[6rem] w-[6rem] items-center rounded-3xl bg-cover shadow-md bg-[url({{.Avatar}})]"></div>
+    <div class=" col-span-9 row-start-6 mx-3 mt-[0.4rem] grid h-[10.3rem] grid-cols-2 grid-rows-2 rounded-lg bg-black px-3 py-3 text-white shadow-md shadow-black">
+        <div class="row-span-1 grid grid-rows-5">
+            <div class="row-span-1">Rating</div>
+                <div class="row-span-5 mr-2 mt-5 text-right text-4xl ">{{.Rating}}</div>
+        </div>
+        <div class="row-start-2 grid grid-rows-5">
+            <div class="row-span-1">Level</div>
+                <div class="row-span-5 mr-2 mt-5 text-right text-4xl ">{{.Level}}</div>
+        </div>
+        <div class="row-span-2 grid grid-rows-8">
+            <div class="row-span-1">
+                <div class="ml-1 text-xs">solved {{.Solved}} problems</div>
+            </div>
+            <div class="row-span-7 grid grid-rows-6">
+                {{range .SolvedData}}
+                <div class="row-span-1 grid grid-rows-2">
+                    <div class="row-span-1 grid grid-cols-2">
+                        <div class="col-span-1 ml-1 text-sm">{{.Range}}</div>
+                        <div class="col-span-1 mr-1 text-right text-sm">{{printf "%.1f" .Percent}}%</div>
+                    </div>
+                    <div class="line m-2 h-1 rounded-full bg-[#F0732A]" style="width:{{.Percent}}%"></div>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+            <div class="row-start-10 row-span-1 col-span-9 text-gray-300 text-[0.6rem] -mb-[0.2rem]">#{{.Time}}</div>
+</div>
+
+</body>
+<script>
+
+</script>
+</html>
