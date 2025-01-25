@@ -13,7 +13,7 @@ var (
 	MenuText = `以下是功能列表：所有命令都要加上前缀` + "`" + CommandPrefix + "`" + `哦🥰
 0. help(或菜单)，输出本消息
 
-1. cf [username]，用于查询codeforces用户的基本信息
+1. cf/at [username]，用于查询codeforces/atcoder用户的基本信息
 
 2. rating(或rt) [username]，用于查询codeforces用户的rating变化曲线
 
@@ -35,6 +35,7 @@ var (
 
 		{[]string{"cf"}, codeforcesProfileHandler},
 		{[]string{"rt", "rating"}, codeforcesRatingHandler},
+		{[]string{"at"}, atcoderProfileHandler},
 
 		{[]string{"help", "菜单"}, textHandler(MenuText)},
 	}
@@ -42,7 +43,7 @@ var (
 
 func codeforcesProfileHandler(ctx *Context) error {
 	return helper.
-		NewChainContext[Context](ctx).
+		NewChainContext(ctx).
 		Then(getHandlerFromParams).
 		Then(getCodeforcesUserByHandle).
 		Then(getRenderedCodeforcesUserProfile).
@@ -52,10 +53,20 @@ func codeforcesProfileHandler(ctx *Context) error {
 
 func codeforcesRatingHandler(ctx *Context) error {
 	return helper.
-		NewChainContext[Context](ctx).
+		NewChainContext(ctx).
 		Then(getHandlerFromParams).
 		Then(getCodeforcesUserByHandle).
 		Then(getRenderedCodeforcesRatingChanges).
+		Then(sendPicture).
+		Execute()
+}
+
+func atcoderProfileHandler(ctx *Context) error {
+	return helper.
+		NewChainContext(ctx).
+		Then(getHandlerFromParams).
+		Then(getAtcoderUserByHandle).
+		Then(getRenderedAtcoderUserProfile).
 		Then(sendPicture).
 		Execute()
 }
@@ -64,7 +75,7 @@ func raceHandler(provider model.RaceProvider) Task {
 	return func(ctx *Context) error {
 		ctx.StepValue = provider
 		return helper.
-			NewChainContext[Context](ctx).
+			NewChainContext(ctx).
 			Then(getRaceFromProvider).
 			Then(sendRace).
 			Execute()
@@ -79,7 +90,7 @@ func textHandler(text string) Task {
 }
 
 func bindCodeforcesUserHandler(ctx *Context) error {
-	return helper.NewChainContext[Context](ctx).
+	return helper.NewChainContext(ctx).
 		Then(getHandlerFromParams).
 		Then(bindCodeforcesUser).
 		Execute()

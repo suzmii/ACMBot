@@ -1,13 +1,11 @@
 package render
 
 import (
+	"github.com/playwright-community/playwright-go"
+	log "github.com/sirupsen/logrus"
 	"html/template"
 	"os"
 	"path"
-	"strings"
-
-	"github.com/playwright-community/playwright-go"
-	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -18,6 +16,7 @@ var (
 	codeforcesUserProfileV1Template *template.Template
 	codeforcesUserProfileV2Template *template.Template
 	codeforcesRatingChangeTemplate  *template.Template
+	atcoderUserProfileTemplate      *template.Template
 	qqGroupRankTemplate             *template.Template
 )
 
@@ -34,6 +33,7 @@ const (
 	CodeforcesUserProfileV1TemplatePath = templatePath + "codeforces_profile_v1.html"
 	CodeforcesUserProfileV2TemplatePath = templatePath + "codeforces_profile_v2.html"
 	CodeforcesRatingChangesTemplatePath = templatePath + "codeforces_rating_change.html"
+	AtcoderUserProfileTemplatePath      = templatePath + "atcoder_profile.html"
 	QQGroupRankTemplatePath             = templatePath + "qq_group_rank.html"
 )
 
@@ -79,6 +79,7 @@ func initTemplates() {
 		&codeforcesUserProfileV1Template: CodeforcesUserProfileV1TemplatePath,
 		&codeforcesUserProfileV2Template: CodeforcesUserProfileV2TemplatePath,
 		&codeforcesRatingChangeTemplate:  CodeforcesRatingChangesTemplatePath,
+		&atcoderUserProfileTemplate:      AtcoderUserProfileTemplatePath,
 		&qqGroupRankTemplate:             QQGroupRankTemplatePath,
 	}
 
@@ -101,9 +102,9 @@ func Html(PageOpt *playwright.BrowserNewPageOptions, HTMLOpt *HtmlOptions) ([]by
 	}
 	defer page.Close()
 
-	if strings.HasPrefix(HTMLOpt.Path, "file://") {
-		HTMLOpt.Path = "file://" + HTMLOpt.Path
-	}
+	//if !strings.HasPrefix(HTMLOpt.Path, "file://") {
+	//	HTMLOpt.Path = "file://" + HTMLOpt.Path
+	//}
 	if _, err = page.Goto("file://" + HTMLOpt.Path); err != nil {
 		return nil, Error{msg: err.Error()}
 	}
