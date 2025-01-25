@@ -1,84 +1,33 @@
 package message
 
-import "fmt"
-
-type Type int
-
-const (
-	TypeText Type = iota
-	TypeImageBytes
-	TypeAt
-	TypeMixNode
+import (
+	"github.com/YourSuzumiya/ACMBot/app/model"
+	zMsg "github.com/wdvxdr1123/ZeroBot/message"
 )
 
-type Message []Node
-
-type Node struct {
-	MessageType Type
-	data        any
+type Message interface {
+	ToZeroMessage() zMsg.Message
 }
 
-func (n Node) Text() (string, bool) {
-	if n.MessageType != TypeText {
-		return "", false
+type Text string
+
+func (t Text) ToZeroMessage() zMsg.Message {
+	return zMsg.Message{zMsg.Text(t)}
+}
+
+type Image []byte
+
+func (i Image) ToZeroMessage() zMsg.Message {
+	return zMsg.Message{zMsg.ImageBytes(i)}
+}
+
+type Races []model.Race
+
+func (r Races) ToZeroMessage() zMsg.Message {
+	var result string
+
+	for _, race := range r[:min(8, len(r))] {
+		result += "\n" + race.NoUrlString()
 	}
-	return n.data.(string), true
-}
-
-func (n Node) Text_() string {
-	return n.data.(string)
-}
-
-func (n Node) ImageBytes() ([]byte, bool) {
-	if n.MessageType != TypeImageBytes {
-		return nil, false
-	}
-	return n.data.([]byte), true
-}
-
-func (n Node) ImageBytes_() []byte {
-	return n.data.([]byte)
-}
-
-func (n Node) At() (int64, bool) {
-	if n.MessageType != TypeAt {
-		return 0, false
-	}
-	return n.data.(int64), true
-}
-
-func (n Node) At_() int64 {
-	return n.data.(int64)
-}
-
-func (n Node) MixNode() (Node, bool) {
-	if n.MessageType != TypeMixNode {
-		return Node{}, false
-	}
-	return n.data.(Node), true
-}
-
-func (n Node) MixNode_() Node {
-	return n.data.(Node)
-}
-
-func Text(text ...any) Node {
-
-	return Node{TypeText, fmt.Sprint(text...)}
-}
-
-func ImageBytes(bytes []byte) Node {
-	return Node{TypeImageBytes, bytes}
-}
-
-func At(at int64) Node {
-	return Node{TypeAt, at}
-}
-
-func MixNode(node Node) Node {
-	return Node{TypeMixNode, node}
-}
-
-func Error(err error) Node {
-	return Node{TypeText, err.Error()}
+	return zMsg.Message{zMsg.Text(result)}
 }
