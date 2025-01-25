@@ -3,16 +3,15 @@ package bot
 import "github.com/YourSuzumiya/ACMBot/app/bot/message"
 
 type Context struct {
-	Invoker
+	ApiCaller
 	Platform Platform
 
 	StepValue any
 }
 
-type Invoker interface {
+type ApiCaller interface {
 	Send(message message.Message)
-	SendError(err error)
-	Params() message.Message
+	Params() []string
 	GetCallerInfo() CallerInfo
 }
 

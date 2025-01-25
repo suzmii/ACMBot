@@ -9,7 +9,6 @@ import (
 	"github.com/YourSuzumiya/ACMBot/app/errs"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/driver"
-	zMsg "github.com/wdvxdr1123/ZeroBot/message"
 	"strings"
 	"time"
 )
@@ -67,7 +66,7 @@ func (c *qqContext) GetContextType() bot.Platform {
 }
 
 func (c *qqContext) Send(msg myMsg.Message) {
-	c.zCtx.Send(msgToZeroMsg(msg))
+	c.zCtx.Send(msg.ToZeroMessage())
 }
 
 func (c *qqContext) SendError(err error) {
@@ -76,55 +75,9 @@ func (c *qqContext) SendError(err error) {
 	}
 }
 
-func (c *qqContext) Params() myMsg.Message {
+func (c *qqContext) Params() []string {
 	argStr := c.zCtx.State["args"].(string)
-	var res myMsg.Message
-	for _, s := range strings.Fields(argStr) {
-		res = append(res, myMsg.Text(s))
-	}
-	return res
-}
-
-func trans(node myMsg.Node) zMsg.MessageSegment {
-	switch node.MessageType {
-	case myMsg.TypeText:
-		return zMsg.Text(node.Text_())
-	case myMsg.TypeImageBytes:
-		return zMsg.ImageBytes(node.ImageBytes_())
-	case myMsg.TypeAt:
-		return zMsg.At(node.At_())
-	case myMsg.TypeMixNode:
-		return trans(node.MixNode_())
-	default:
-		return zMsg.Text("Unknown message type")
-	}
-}
-
-func msgToZeroMsg(msg myMsg.Message) zMsg.Message {
-	if len(msg) == 0 {
-		return zMsg.Message{}
-	}
-
-	resultMessage := make(zMsg.Message, 0, len(msg))
-
-	appendFunc := func(n myMsg.Node) {
-		resultMessage = append(resultMessage, trans(n))
-	}
-
-	for _, v := range msg {
-		if v.MessageType == myMsg.TypeMixNode {
-			appendFunc = func(n myMsg.Node) {
-				resultMessage = append(resultMessage, zMsg.CustomNode("", 0, zMsg.Message{trans(n)}))
-			}
-			break
-		}
-	}
-
-	for _, v := range msg {
-		appendFunc(v)
-	}
-
-	return resultMessage
+	return strings.Fields(argStr)
 }
 
 var (
@@ -177,14 +130,14 @@ func init() {
 		zeroHandler := func(ctx *zero.Ctx) {
 			qCtx := newQQContext(withZeroCtx(ctx))
 			c := &bot.Context{
-				Invoker:  qCtx,
-				Platform: qCtx.Platform,
+				ApiCaller: qCtx,
+				Platform:  qCtx.Platform,
 			}
 			err := handler(c)
 			if err == nil {
 				return
 			}
-			qCtx.Send(myMsg.Message{myMsg.Text(err.Error())})
+			qCtx.Send(myMsg.Text(err.Error()))
 			var internalError errs.InternalError
 			if errors.As(err, &internalError) {
 				qCtx.SendError(err)
