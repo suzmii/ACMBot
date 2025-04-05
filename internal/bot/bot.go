@@ -1,9 +1,11 @@
 package bot
 
 import (
+	"context"
+
 	"github.com/suzmii/ACMBot/conf"
-	"github.com/suzmii/ACMBot/internal/manager"
-	"github.com/suzmii/ACMBot/internal/tasks"
+	"github.com/suzmii/ACMBot/internal/logic/manager"
+	"github.com/suzmii/ACMBot/internal/logic/tasks"
 	"github.com/suzmii/ACMBot/pkg/model/race"
 )
 
@@ -22,7 +24,7 @@ var (
 
 type CommandHandler struct {
 	Commands []string
-	Handler  tasks.Task
+	Handler  func(context.Context) error
 }
 
 var (

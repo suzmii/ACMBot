@@ -1,11 +1,15 @@
 package qq
 
 import (
+	"context"
+	"github.com/suzmii/ACMBot/internal/logic/tasks"
+	"github.com/suzmii/ACMBot/internal/util/ctxUtil"
+	"github.com/suzmii/ACMBot/pkg/model/bot"
+
 	"errors"
 	"fmt"
 	bot2 "github.com/suzmii/ACMBot/internal/bot"
 	myMsg "github.com/suzmii/ACMBot/internal/bot/message"
-	"github.com/suzmii/ACMBot/internal/context"
 	"github.com/suzmii/ACMBot/pkg/errs"
 	"strings"
 	"time"
@@ -29,12 +33,7 @@ func withZeroCtx(zCtx *zero.Ctx) ctxOption {
 }
 
 func newQQContext(opts ...ctxOption) *qqContext {
-	res := &qqContext{
-		Context: context.Context{
-			Platform:  context.PlatformQQ,
-			StepValue: nil,
-		},
-	}
+	res := &qqContext{}
 
 	for _, opt := range opts {
 		opt(res)
@@ -43,8 +42,8 @@ func newQQContext(opts ...ctxOption) *qqContext {
 	return res
 }
 
-func (c *qqContext) GetCallerInfo() context.CallerInfo {
-	result := context.CallerInfo{
+func (c *qqContext) GetCallerInfo() bot.CallerInfo {
+	result := bot.CallerInfo{
 		ID:       c.zCtx.Event.UserID,
 		NickName: c.zCtx.Event.Sender.NickName,
 	}
@@ -53,7 +52,7 @@ func (c *qqContext) GetCallerInfo() context.CallerInfo {
 
 	if gid != 0 {
 		gInfo := c.zCtx.GetGroupInfo(gid, false)
-		result.Group = context.GroupInfo{
+		result.Group = bot.GroupInfo{
 			ID:          gid,
 			Name:        gInfo.Name,
 			MemberCount: gInfo.MemberCount,
@@ -63,8 +62,8 @@ func (c *qqContext) GetCallerInfo() context.CallerInfo {
 	return result
 }
 
-func (c *qqContext) GetContextType() context.Platform {
-	return context.PlatformQQ
+func (c *qqContext) GetContextType() bot.Platform {
+	return bot.PlatformQQ
 }
 
 func (c *qqContext) Send(msg myMsg.Message) {
@@ -75,11 +74,6 @@ func (c *qqContext) SendError(err error) {
 	for _, user := range zeroCfg.SuperUsers {
 		c.zCtx.SendPrivateMessage(user, err.Error())
 	}
-}
-
-func (c *qqContext) Params() []string {
-	argStr := c.zCtx.State["args"].(string)
-	return strings.Fields(argStr)
 }
 
 var (
@@ -129,13 +123,14 @@ func init() {
 	for _, command := range bot2.Commands {
 		commands := command.Commands
 		handler := command.Handler
-		zeroHandler := func(ctx *zero.Ctx) {
-			qCtx := newQQContext(withZeroCtx(ctx))
-			c := &context.Context{
-				ApiCaller: qCtx,
-				Platform:  qCtx.Platform,
-			}
-			err := handler(c)
+
+		zeroHandler := func(zCtx *zero.Ctx) {
+			qCtx := newQQContext(withZeroCtx(zCtx))
+			ctx := context.Background()
+			ctx = ctxUtil.Set[bot.ApiCaller](ctx, qCtx)
+			ctx = ctxUtil.Set[bot.Platform](ctx, bot.PlatformQQ)
+			ctx = ctxUtil.Set[tasks.Params](ctx, strings.Fields(zCtx.State["args"].(string)))
+			err := handler(ctx)
 			if err == nil {
 				return
 			}

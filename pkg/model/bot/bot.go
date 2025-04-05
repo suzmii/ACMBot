@@ -1,19 +1,15 @@
-package context
+package bot
 
 import (
+	"context"
+
 	"github.com/suzmii/ACMBot/internal/bot/message"
 )
 
-type Context struct {
-	ApiCaller
-	Platform Platform
-
-	StepValue any
-}
+type Handler func(context.Context) error
 
 type ApiCaller interface {
 	Send(message message.Message)
-	Params() []string
 	GetCallerInfo() CallerInfo
 }
 
