@@ -41,6 +41,6 @@ go run ./main.go
 
 ## 提示
 
-本分支基于 zerobot 进行了二次开发，补了部分 Gensokyo 扩展的 api，并且用了这部分 api
+用了部分`Gensokyo`扩展的 api，非`Gensokyo`协议端可能不支持
 
-所以它和主线完全不兼容，并且需要搭配 gensokyo 使用
+[TODO] 后期会在配置文件里加开关的
