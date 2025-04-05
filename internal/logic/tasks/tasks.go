@@ -3,11 +3,11 @@ package tasks
 import (
 	"context"
 	"fmt"
-	"github.com/suzmii/ACMBot/internal/bot/message"
+	"github.com/suzmii/ACMBot/internal/errs"
 	"github.com/suzmii/ACMBot/internal/logic/manager"
+	"github.com/suzmii/ACMBot/internal/model/bot"
+	"github.com/suzmii/ACMBot/internal/model/message"
 	"github.com/suzmii/ACMBot/internal/util/ctxUtil"
-	"github.com/suzmii/ACMBot/pkg/errs"
-	"github.com/suzmii/ACMBot/pkg/model/bot"
 )
 
 // getHandlerFromParams nil -> handles

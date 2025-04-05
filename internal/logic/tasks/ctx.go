@@ -2,9 +2,9 @@ package tasks
 
 import (
 	"github.com/suzmii/ACMBot/internal/logic/manager"
-	"github.com/suzmii/ACMBot/pkg/model/bot"
-	"github.com/suzmii/ACMBot/pkg/model/provider"
-	"github.com/suzmii/ACMBot/pkg/model/race"
+	"github.com/suzmii/ACMBot/internal/model/bot"
+	"github.com/suzmii/ACMBot/internal/model/provider"
+	"github.com/suzmii/ACMBot/internal/model/race"
 )
 
 type handles []string

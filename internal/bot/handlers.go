@@ -1,12 +1,12 @@
 package bot
 
 import (
-	"context"
-
 	"github.com/suzmii/ACMBot/conf"
 	"github.com/suzmii/ACMBot/internal/logic/manager"
 	"github.com/suzmii/ACMBot/internal/logic/tasks"
-	"github.com/suzmii/ACMBot/pkg/model/race"
+	"github.com/suzmii/ACMBot/internal/model/race"
+
+	"context"
 )
 
 var (

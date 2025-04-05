@@ -2,14 +2,14 @@ package manager
 
 import (
 	"encoding/json"
+	"github.com/suzmii/ACMBot/internal/model/cache"
+	"github.com/suzmii/ACMBot/internal/model/db"
+	"github.com/suzmii/ACMBot/internal/render"
 	"sort"
 	"sync"
 	"time"
 
 	"github.com/suzmii/ACMBot/internal/fetcher"
-	cache2 "github.com/suzmii/ACMBot/pkg/model/cache"
-	db2 "github.com/suzmii/ACMBot/pkg/model/db"
-	"github.com/suzmii/ACMBot/pkg/render"
 )
 
 var (
@@ -29,7 +29,7 @@ type SolvedData struct {
 }
 
 type CodeforcesUser struct {
-	DBUser         db2.CodeforcesUser
+	DBUser         db.CodeforcesUser
 	SolvedProblems []SolvedData
 	SolvedCount    int
 }
@@ -109,7 +109,7 @@ func (u *CodeforcesUser) fromFetcherUserInfo(user *fetcher.CodeforcesUser) error
 
 func (u *CodeforcesUser) fromFetcherRatingChanges(changes []fetcher.CodeforcesRatingChange) error {
 	for _, change := range changes {
-		u.DBUser.RatingChanges = append(u.DBUser.RatingChanges, db2.CodeforcesRatingChange{
+		u.DBUser.RatingChanges = append(u.DBUser.RatingChanges, db.CodeforcesRatingChange{
 			CodeforcesUserID: u.DBUser.ID,
 			At:               time.Unix(change.At, 0),
 			NewRating:        change.NewRating,
@@ -119,13 +119,13 @@ func (u *CodeforcesUser) fromFetcherRatingChanges(changes []fetcher.CodeforcesRa
 }
 
 func (u *CodeforcesUser) fromFetcherSubmissions(submissions []fetcher.CodeforcesSubmission) error {
-	problemID2submission := make(map[string][]db2.CodeforcesSubmission)
-	problemID2problem := make(map[string]db2.CodeforcesProblem)
-	newSubmissions := make([]db2.CodeforcesSubmission, 0, len(submissions))
+	problemID2submission := make(map[string][]db.CodeforcesSubmission)
+	problemID2problem := make(map[string]db.CodeforcesProblem)
+	newSubmissions := make([]db.CodeforcesSubmission, 0, len(submissions))
 
 	for _, submission := range submissions {
 		id := submission.Problem.ID()
-		dbSubmission := db2.CodeforcesSubmission{
+		dbSubmission := db.CodeforcesSubmission{
 			CodeforcesUserID:    u.DBUser.ID,
 			CodeforcesProblemID: id,
 			At:                  time.Unix(submission.At, 0),
@@ -134,22 +134,22 @@ func (u *CodeforcesUser) fromFetcherSubmissions(submissions []fetcher.Codeforces
 
 		newSubmissions = append(newSubmissions, dbSubmission)
 		problemID2submission[id] = append(problemID2submission[id], dbSubmission)
-		problemID2problem[id] = db2.CodeforcesProblem{
+		problemID2problem[id] = db.CodeforcesProblem{
 			ID:     id,
 			Rating: submission.Problem.Rating,
 		}
 	}
 
-	s := make([]db2.CodeforcesProblem, 0, len(problemID2problem))
+	s := make([]db.CodeforcesProblem, 0, len(problemID2problem))
 	for id := range problemID2submission {
-		s = append(s, db2.CodeforcesProblem{
+		s = append(s, db.CodeforcesProblem{
 			ID:     id,
 			Rating: problemID2problem[id].Rating,
 		})
 	}
 
 	if len(s) > 0 {
-		if err := db2.SaveCodeforcesProblems(s); err != nil {
+		if err := db.SaveCodeforcesProblems(s); err != nil {
 			return err
 		}
 	}
@@ -159,7 +159,7 @@ func (u *CodeforcesUser) fromFetcherSubmissions(submissions []fetcher.Codeforces
 }
 
 func (u *CodeforcesUser) loadFromDB(handle string) error {
-	if user, err := db2.LoadCodeforcesUserByHandle(handle); err != nil {
+	if user, err := db.LoadCodeforcesUserByHandle(handle); err != nil {
 		return err
 	} else {
 		u.DBUser = *user
@@ -171,7 +171,7 @@ func (u *CodeforcesUser) saveUser2DB() error {
 	user := u.DBUser
 	user.RatingChanges = nil
 	user.Submissions = nil
-	err := db2.SaveCodeforcesUser(&user)
+	err := db.SaveCodeforcesUser(&user)
 	if err != nil {
 		return err
 	}
@@ -180,33 +180,33 @@ func (u *CodeforcesUser) saveUser2DB() error {
 }
 
 func (u *CodeforcesUser) saveFetcherSubmissions2DB(submissions []fetcher.CodeforcesSubmission) error {
-	dbSubmissions := make([]db2.CodeforcesSubmission, 0, len(submissions))
+	dbSubmissions := make([]db.CodeforcesSubmission, 0, len(submissions))
 	for _, submission := range submissions {
-		dbSubmissions = append(dbSubmissions, db2.CodeforcesSubmission{
+		dbSubmissions = append(dbSubmissions, db.CodeforcesSubmission{
 			CodeforcesUserID:    u.DBUser.ID,
 			CodeforcesProblemID: submission.Problem.ID(),
 			At:                  time.Unix(submission.At, 0),
 			Status:              submission.Status,
 		})
 	}
-	return db2.SaveCodeforcesSubmissions(dbSubmissions)
+	return db.SaveCodeforcesSubmissions(dbSubmissions)
 }
 
 func (u *CodeforcesUser) saveFetcherRatingChanges2DB(ratingChanges []fetcher.CodeforcesRatingChange) error {
-	dbRatingChanges := make([]db2.CodeforcesRatingChange, 0, len(ratingChanges))
+	dbRatingChanges := make([]db.CodeforcesRatingChange, 0, len(ratingChanges))
 	for _, ratingChange := range ratingChanges {
-		dbRatingChanges = append(dbRatingChanges, db2.CodeforcesRatingChange{
+		dbRatingChanges = append(dbRatingChanges, db.CodeforcesRatingChange{
 			CodeforcesUserID: u.DBUser.ID,
 			At:               time.Unix(ratingChange.At, 0),
 			NewRating:        ratingChange.NewRating,
 		})
 	}
-	return db2.SaveCodeforcesRatingChanges(dbRatingChanges)
+	return db.SaveCodeforcesRatingChanges(dbRatingChanges)
 }
 
 func (u *CodeforcesUser) loadFromCache(handle string) (err error) {
 	var data string
-	if data, err = cache2.GetCodeforcesUser(handle); err != nil {
+	if data, err = cache.GetCodeforcesUser(handle); err != nil {
 		return err
 	}
 	return json.Unmarshal([]byte(data), &u)
@@ -217,7 +217,7 @@ func (u *CodeforcesUser) saveToCache() (err error) {
 	if data, err = json.Marshal(u); err != nil {
 		return err
 	}
-	if err = cache2.SetCodeforcesUser(u.DBUser.Handle, data, 4*time.Hour); err != nil {
+	if err = cache.SetCodeforcesUser(u.DBUser.Handle, data, 4*time.Hour); err != nil {
 		return err
 	}
 	return nil
@@ -227,7 +227,7 @@ func (u *CodeforcesUser) saveToCache() (err error) {
 func (u *CodeforcesUser) cruDBUser(handle string) (err error) {
 	isNewUser := false
 	if err = u.loadFromDB(handle); err != nil {
-		if !db2.IsNotFound(err) {
+		if !db.IsNotFound(err) {
 			return err
 		}
 		isNewUser = true
@@ -240,7 +240,7 @@ func (u *CodeforcesUser) cruDBUser(handle string) (err error) {
 
 	lastRatingChangeAt := time.Unix(0, 0)
 	if !isNewUser {
-		lastRatingChange, err := db2.LoadLastCodeforcesRatingChangeByUID(u.DBUser.ID)
+		lastRatingChange, err := db.LoadLastCodeforcesRatingChangeByUID(u.DBUser.ID)
 		if err != nil {
 			return err
 		}
@@ -257,7 +257,7 @@ func (u *CodeforcesUser) cruDBUser(handle string) (err error) {
 
 	lastSubmitAt := time.Unix(0, 0)
 	if !isNewUser {
-		lastSubmission, err := db2.LoadLastCodeforcesSubmissionByUID(u.DBUser.ID)
+		lastSubmission, err := db.LoadLastCodeforcesSubmissionByUID(u.DBUser.ID)
 		if err != nil {
 			return err
 		}
@@ -307,8 +307,8 @@ func (u *CodeforcesUser) process() (err error) {
 	// ---------------------------------------------------------------------- //
 	// 解题数据
 	// ---------------------------------------------------------------------- //
-	var solvedProblems []db2.CodeforcesProblem
-	if solvedProblems, err = db2.LoadCodeforcesSolvedProblemByUID(u.DBUser.ID); err != nil {
+	var solvedProblems []db.CodeforcesProblem
+	if solvedProblems, err = db.LoadCodeforcesSolvedProblemByUID(u.DBUser.ID); err != nil {
 		return err
 	}
 
@@ -340,12 +340,12 @@ func (u *CodeforcesUser) process() (err error) {
 	}
 	// ---------------------------------------------------------------------- //
 
-	u.SolvedCount, err = db2.CountCodeforcesSolvedByUID(u.DBUser.ID)
+	u.SolvedCount, err = db.CountCodeforcesSolvedByUID(u.DBUser.ID)
 	if err != nil {
 		return err
 	}
 
-	u.DBUser.RatingChanges, err = db2.LoadCodeforcesRatingChangesByUID(u.DBUser.ID)
+	u.DBUser.RatingChanges, err = db.LoadCodeforcesRatingChangesByUID(u.DBUser.ID)
 	if err != nil {
 		return err
 	}
@@ -361,7 +361,7 @@ func GetUpdatedCodeforcesUser(handle string) (user *CodeforcesUser, err error) {
 
 	user = &CodeforcesUser{}
 
-	if err = user.loadFromCache(handle); err != nil && !cache2.IsNil(err) {
+	if err = user.loadFromCache(handle); err != nil && !cache.IsNil(err) {
 		return nil, err
 	}
 

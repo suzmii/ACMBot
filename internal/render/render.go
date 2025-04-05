@@ -29,7 +29,7 @@ func (e Error) Error() string {
 }
 
 const (
-	templatePath                        = "pkg/render/templates/"
+	templatePath                        = "internal/render/templates/"
 	CodeforcesUserProfileV1TemplatePath = templatePath + "codeforces_profile_v1.html"
 	CodeforcesUserProfileV2TemplatePath = templatePath + "codeforces_profile_v2.html"
 	CodeforcesRatingChangesTemplatePath = templatePath + "codeforces_rating_change.html"

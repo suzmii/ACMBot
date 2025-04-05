@@ -3,10 +3,10 @@ package manager
 import (
 	"errors"
 	"fmt"
+	"github.com/suzmii/ACMBot/internal/errs"
 	"github.com/suzmii/ACMBot/internal/fetcher"
-	"github.com/suzmii/ACMBot/pkg/errs"
-	db2 "github.com/suzmii/ACMBot/pkg/model/db"
-	"github.com/suzmii/ACMBot/pkg/render"
+	"github.com/suzmii/ACMBot/internal/model/db"
+	"github.com/suzmii/ACMBot/internal/render"
 	"sort"
 
 	log "github.com/sirupsen/logrus"
@@ -41,20 +41,20 @@ func BindQQAndCodeforcesHandler(qqBind QQBind) error {
 		return err
 	}
 	var userID uint
-	if userID, err = db2.GetCodeforcesUserID(qqBind.CodeforcesHandle); err != nil {
+	if userID, err = db.GetCodeforcesUserID(qqBind.CodeforcesHandle); err != nil {
 		log.Errorf("get code forces user id %v", err)
 		return err
 	}
-	var bind = db2.QQBind{
+	var bind = db.QQBind{
 		QID:              qqBind.QID,
 		CodeforcesUserID: userID,
 		QName:            qqBind.QQName,
 	}
-	var group = db2.QQGroup{
+	var group = db.QQGroup{
 		GroupID: qqBind.QQGroupID,
 		QID:     qqBind.QID,
 	}
-	if err = db2.BindQQToCodeforces(bind, group); err != nil {
+	if err = db.BindQQToCodeforces(bind, group); err != nil {
 		if !errors.Is(err, errs.ErrHandleHasBindByOthers) {
 			log.Errorf("bind CallerID in db failed %v", err)
 		}
@@ -64,9 +64,9 @@ func BindQQAndCodeforcesHandler(qqBind QQBind) error {
 }
 
 func GetGroupRank(qqGroup QQGroup) (*render.QQGroupRank, error) {
-	var rank *db2.QQGroupRank
+	var rank *db.QQGroupRank
 	var err error
-	if rank, err = db2.GetQQGroupRank(qqGroup.QQGroupID); err != nil {
+	if rank, err = db.GetQQGroupRank(qqGroup.QQGroupID); err != nil {
 		log.Errorf("get group rank failed %v", err)
 		return nil, err
 	}

@@ -3,8 +3,8 @@ package fetcher
 import (
 	"errors"
 	"fmt"
+	"github.com/suzmii/ACMBot/internal/model/race"
 	"github.com/suzmii/ACMBot/internal/util"
-	"github.com/suzmii/ACMBot/pkg/model/race"
 	"time"
 
 	"github.com/imroc/req/v3"

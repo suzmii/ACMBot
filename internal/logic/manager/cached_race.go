@@ -3,9 +3,9 @@ package manager
 import (
 	"fmt"
 	"github.com/suzmii/ACMBot/internal/fetcher"
-	"github.com/suzmii/ACMBot/pkg/model/cache"
-	"github.com/suzmii/ACMBot/pkg/model/provider"
-	"github.com/suzmii/ACMBot/pkg/model/race"
+	"github.com/suzmii/ACMBot/internal/model/cache"
+	"github.com/suzmii/ACMBot/internal/model/provider"
+	"github.com/suzmii/ACMBot/internal/model/race"
 	"sort"
 	"time"
 )

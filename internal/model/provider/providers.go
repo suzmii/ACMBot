@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"github.com/suzmii/ACMBot/pkg/model/race"
+	"github.com/suzmii/ACMBot/internal/model/race"
 )
 
 type RaceProvider func() ([]race.Race, error)
