@@ -7,7 +7,7 @@ import (
 	"github.com/wdvxdr1123/ZeroBot/message"
 )
 
-func MarkDown(raw map[string]any) message.MessageSegment {
+func MarkDown(raw map[string]any) message.Segment {
 	/*
 		MarkDown(map[string]any{
 					"markdown": map[string]any{
@@ -17,7 +17,7 @@ func MarkDown(raw map[string]any) message.MessageSegment {
 	*/
 	res, _ := json.Marshal(raw)
 	logrus.Info(string(res))
-	return message.MessageSegment{
+	return message.Segment{
 		Type: "markdown",
 		Data: map[string]string{
 			"data": `{"data":"base64://` + base64.StdEncoding.EncodeToString(res) + `"}`,
