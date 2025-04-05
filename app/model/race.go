@@ -2,8 +2,9 @@ package model
 
 import (
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app/helper"
 	"time"
+
+	"github.com/suzmii/ACMBot/app/helper"
 )
 
 type Resource string

@@ -3,8 +3,9 @@ package render
 import (
 	"bytes"
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app/errs"
+
 	"github.com/playwright-community/playwright-go"
+	"github.com/suzmii/ACMBot/app/errs"
 )
 
 type CodeforcesUser struct {

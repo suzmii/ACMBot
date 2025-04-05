@@ -12,9 +12,9 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/YourSuzumiya/ACMBot/app/errs"
 	"github.com/gocolly/colly/v2"
 	log "github.com/sirupsen/logrus"
+	"github.com/suzmii/ACMBot/app/errs"
 )
 
 const (
@@ -80,8 +80,8 @@ type AtcoderSubmission struct {
 }
 
 type AtcoderProblem struct {
-	Id    string `json:"id"`
-	Point float64    `json:"point"`
+	Id    string  `json:"id"`
+	Point float64 `json:"point"`
 }
 
 type AtcoderContest struct {

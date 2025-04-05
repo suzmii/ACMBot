@@ -3,14 +3,15 @@ package qq
 import (
 	"errors"
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app"
-	"github.com/YourSuzumiya/ACMBot/app/bot"
-	myMsg "github.com/YourSuzumiya/ACMBot/app/bot/message"
-	"github.com/YourSuzumiya/ACMBot/app/errs"
-	zero "github.com/wdvxdr1123/ZeroBot"
-	"github.com/wdvxdr1123/ZeroBot/driver"
 	"strings"
 	"time"
+
+	"github.com/suzmii/ACMBot/app"
+	"github.com/suzmii/ACMBot/app/bot"
+	myMsg "github.com/suzmii/ACMBot/app/bot/message"
+	"github.com/suzmii/ACMBot/app/errs"
+	zero "github.com/wdvxdr1123/ZeroBot"
+	"github.com/wdvxdr1123/ZeroBot/driver"
 )
 
 type qqContext struct {

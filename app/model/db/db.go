@@ -3,8 +3,9 @@ package db
 import (
 	"errors"
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app"
+
 	log "github.com/sirupsen/logrus"
+	"github.com/suzmii/ACMBot/app"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 

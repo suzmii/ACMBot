@@ -2,8 +2,9 @@ package cache
 
 import (
 	"encoding/json"
-	"github.com/YourSuzumiya/ACMBot/app/model"
 	"time"
+
+	"github.com/suzmii/ACMBot/app/model"
 )
 
 func keyRace(source model.Resource) string {

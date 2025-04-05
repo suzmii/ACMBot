@@ -1,10 +1,10 @@
 package bot
 
 import (
-	"github.com/YourSuzumiya/ACMBot/app"
-	"github.com/YourSuzumiya/ACMBot/app/helper"
-	"github.com/YourSuzumiya/ACMBot/app/manager"
-	"github.com/YourSuzumiya/ACMBot/app/model"
+	"github.com/suzmii/ACMBot/app"
+	"github.com/suzmii/ACMBot/app/helper"
+	"github.com/suzmii/ACMBot/app/manager"
+	"github.com/suzmii/ACMBot/app/model"
 )
 
 var (

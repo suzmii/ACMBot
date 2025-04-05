@@ -2,9 +2,10 @@ package db
 
 import (
 	"errors"
-	"github.com/YourSuzumiya/ACMBot/app/errs"
-	"gorm.io/gorm"
 	"sync"
+
+	"github.com/suzmii/ACMBot/app/errs"
+	"gorm.io/gorm"
 )
 
 type QQBind struct {

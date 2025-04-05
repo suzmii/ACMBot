@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app"
+
 	"github.com/redis/go-redis/v9"
+	"github.com/suzmii/ACMBot/app"
 )
 
 var (

@@ -3,11 +3,12 @@ package fetcher
 import (
 	"errors"
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app"
-	"github.com/YourSuzumiya/ACMBot/app/helper"
-	"github.com/YourSuzumiya/ACMBot/app/model"
-	"github.com/imroc/req/v3"
 	"time"
+
+	"github.com/imroc/req/v3"
+	"github.com/suzmii/ACMBot/app"
+	"github.com/suzmii/ACMBot/app/helper"
+	"github.com/suzmii/ACMBot/app/model"
 )
 
 var (

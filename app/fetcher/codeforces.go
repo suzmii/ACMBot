@@ -5,9 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app"
-	"github.com/YourSuzumiya/ACMBot/app/errs"
-	"github.com/YourSuzumiya/ACMBot/app/helper"
 	"io"
 	"net/http"
 	"sort"
@@ -15,6 +12,10 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/suzmii/ACMBot/app"
+	"github.com/suzmii/ACMBot/app/errs"
+	"github.com/suzmii/ACMBot/app/helper"
 
 	"math/rand"
 

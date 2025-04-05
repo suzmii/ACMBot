@@ -3,12 +3,13 @@ package manager
 import (
 	"errors"
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app/errs"
-	"github.com/YourSuzumiya/ACMBot/app/fetcher"
-	"github.com/YourSuzumiya/ACMBot/app/model/db"
-	"github.com/YourSuzumiya/ACMBot/app/render"
-	log "github.com/sirupsen/logrus"
 	"sort"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/suzmii/ACMBot/app/errs"
+	"github.com/suzmii/ACMBot/app/fetcher"
+	"github.com/suzmii/ACMBot/app/model/db"
+	"github.com/suzmii/ACMBot/app/render"
 )
 
 type QQBind struct {
