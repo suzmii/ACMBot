@@ -2,10 +2,11 @@ package bot
 
 import (
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app/bot/message"
-	"github.com/YourSuzumiya/ACMBot/app/errs"
-	"github.com/YourSuzumiya/ACMBot/app/manager"
-	"github.com/YourSuzumiya/ACMBot/app/model"
+
+	"github.com/suzmii/ACMBot/app/bot/message"
+	"github.com/suzmii/ACMBot/app/errs"
+	"github.com/suzmii/ACMBot/app/manager"
+	"github.com/suzmii/ACMBot/app/model"
 )
 
 /*

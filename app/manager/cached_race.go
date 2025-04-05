@@ -2,11 +2,12 @@ package manager
 
 import (
 	"fmt"
-	"github.com/YourSuzumiya/ACMBot/app/fetcher"
-	"github.com/YourSuzumiya/ACMBot/app/model"
-	"github.com/YourSuzumiya/ACMBot/app/model/cache"
 	"sort"
 	"time"
+
+	"github.com/suzmii/ACMBot/app/fetcher"
+	"github.com/suzmii/ACMBot/app/model"
+	"github.com/suzmii/ACMBot/app/model/cache"
 )
 
 const cacheExp = 24 * time.Hour

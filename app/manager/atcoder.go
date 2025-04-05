@@ -6,11 +6,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/YourSuzumiya/ACMBot/app/fetcher"
-	"github.com/YourSuzumiya/ACMBot/app/render"
+	"github.com/suzmii/ACMBot/app/fetcher"
+	"github.com/suzmii/ACMBot/app/render"
 
-	"github.com/YourSuzumiya/ACMBot/app/model/cache"
-	"github.com/YourSuzumiya/ACMBot/app/model/db"
+	"github.com/suzmii/ACMBot/app/model/cache"
+	"github.com/suzmii/ACMBot/app/model/db"
 )
 
 var updatingAtcoderUserUser sync.Map
@@ -63,7 +63,7 @@ func (u *AtcoderUser) ToRenderProfile() *render.AtcoderUserProfile {
 		Level:            u.DBUser.Level,
 		PromotionMessage: u.DBUser.PromotionMessage,
 		Solved:           u.SolvedCount,
-        Time:        time.Now().Format("2006-01-02 15:04:05"),
+		Time:             time.Now().Format("2006-01-02 15:04:05"),
 		SolvedData:       result,
 	}
 }

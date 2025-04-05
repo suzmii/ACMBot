@@ -1,6 +1,6 @@
 package bot
 
-import "github.com/YourSuzumiya/ACMBot/app/bot/message"
+import "github.com/suzmii/ACMBot/app/bot/message"
 
 type Context struct {
 	ApiCaller

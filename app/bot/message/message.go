@@ -1,7 +1,7 @@
 package message
 
 import (
-	"github.com/YourSuzumiya/ACMBot/app/model"
+	"github.com/suzmii/ACMBot/app/model"
 	zMsg "github.com/wdvxdr1123/ZeroBot/message"
 )
 

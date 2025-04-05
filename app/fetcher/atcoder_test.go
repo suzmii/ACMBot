@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/YourSuzumiya/ACMBot/app/errs"
+	"github.com/suzmii/ACMBot/app/errs"
 )
 
 var (

@@ -2,14 +2,15 @@ package manager
 
 import (
 	"encoding/json"
-	"github.com/YourSuzumiya/ACMBot/app/fetcher"
-	"github.com/YourSuzumiya/ACMBot/app/render"
 	"sort"
 	"sync"
 	"time"
 
-	"github.com/YourSuzumiya/ACMBot/app/model/cache"
-	"github.com/YourSuzumiya/ACMBot/app/model/db"
+	"github.com/suzmii/ACMBot/app/fetcher"
+	"github.com/suzmii/ACMBot/app/render"
+
+	"github.com/suzmii/ACMBot/app/model/cache"
+	"github.com/suzmii/ACMBot/app/model/db"
 )
 
 var (

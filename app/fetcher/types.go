@@ -1,8 +1,9 @@
 package fetcher
 
 import (
-	"github.com/YourSuzumiya/ACMBot/app/model"
 	"time"
+
+	"github.com/suzmii/ACMBot/app/model"
 )
 
 func (cr *CodeforcesRace) ToRace() *model.Race {
