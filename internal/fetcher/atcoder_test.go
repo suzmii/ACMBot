@@ -1,7 +1,7 @@
 package fetcher
 
 import (
-	"github.com/suzmii/ACMBot/pkg/errs"
+	"github.com/suzmii/ACMBot/internal/errs"
 	"testing"
 	"time"
 )

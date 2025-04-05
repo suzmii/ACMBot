@@ -3,9 +3,9 @@ package manager
 import (
 	"encoding/json"
 	"github.com/suzmii/ACMBot/internal/fetcher"
-	cache2 "github.com/suzmii/ACMBot/pkg/model/cache"
-	db2 "github.com/suzmii/ACMBot/pkg/model/db"
-	"github.com/suzmii/ACMBot/pkg/render"
+	"github.com/suzmii/ACMBot/internal/model/cache"
+	"github.com/suzmii/ACMBot/internal/model/db"
+	"github.com/suzmii/ACMBot/internal/render"
 	"sort"
 	"sync"
 	"time"
@@ -19,7 +19,7 @@ type AtcoderSolvedData struct {
 }
 
 type AtcoderUser struct {
-	DBUser         db2.AtcoderUser
+	DBUser         db.AtcoderUser
 	SolvedProblems []AtcoderSolvedData
 	SolvedCount    uint
 }
@@ -78,13 +78,13 @@ func (u *AtcoderUser) fromFetcherUserInfo(user *fetcher.AtcoderUser) error {
 }
 
 func (u *AtcoderUser) fromFetcherSubmissions(submissions []fetcher.AtcoderSubmission) error {
-	problemID2Submission := make(map[string][]db2.AtcoderSubmission)
-	problemID2Problem := make(map[string]db2.AtcoderProblem)
-	newSubmissions := make([]db2.AtcoderSubmission, 0, len(submissions))
+	problemID2Submission := make(map[string][]db.AtcoderSubmission)
+	problemID2Problem := make(map[string]db.AtcoderProblem)
+	newSubmissions := make([]db.AtcoderSubmission, 0, len(submissions))
 
 	for _, submission := range submissions {
 		id := submission.ProblemId
-		dbSubmission := db2.AtcoderSubmission{
+		dbSubmission := db.AtcoderSubmission{
 			AtcoderUserID:    u.DBUser.ID,
 			AtcoderProblemID: id,
 			SubmissionTime:   time.Unix(submission.SubmissionTime, 0),
@@ -93,22 +93,22 @@ func (u *AtcoderUser) fromFetcherSubmissions(submissions []fetcher.AtcoderSubmis
 
 		newSubmissions = append(newSubmissions, dbSubmission)
 		problemID2Submission[id] = append(problemID2Submission[id], dbSubmission)
-		problemID2Problem[id] = db2.AtcoderProblem{
+		problemID2Problem[id] = db.AtcoderProblem{
 			ID:     id,
 			Rating: uint(submission.Point),
 		}
 	}
 
-	s := make([]db2.AtcoderProblem, 0, len(problemID2Problem))
+	s := make([]db.AtcoderProblem, 0, len(problemID2Problem))
 	for id := range problemID2Submission {
-		s = append(s, db2.AtcoderProblem{
+		s = append(s, db.AtcoderProblem{
 			ID:     id,
 			Rating: problemID2Problem[id].Rating,
 		})
 	}
 
 	if len(s) > 0 {
-		if err := db2.SaveAtcoderProblems(s); err != nil {
+		if err := db.SaveAtcoderProblems(s); err != nil {
 			return err
 		}
 	}
@@ -118,7 +118,7 @@ func (u *AtcoderUser) fromFetcherSubmissions(submissions []fetcher.AtcoderSubmis
 }
 
 func (u *AtcoderUser) loadFromDB(handle string) error {
-	if user, err := db2.LoadAtcoderUserByHandle(handle); err != nil {
+	if user, err := db.LoadAtcoderUserByHandle(handle); err != nil {
 		return err
 	} else {
 		u.DBUser = *user
@@ -129,7 +129,7 @@ func (u *AtcoderUser) loadFromDB(handle string) error {
 func (u *AtcoderUser) saveUser2DB() error {
 	user := u.DBUser
 	user.Submissions = nil
-	err := db2.SaveAtcoderUser(&user)
+	err := db.SaveAtcoderUser(&user)
 	if err != nil {
 		return err
 	}
@@ -138,21 +138,21 @@ func (u *AtcoderUser) saveUser2DB() error {
 }
 
 func (u *AtcoderUser) saveFetcherSubmissions2DB(submissions []fetcher.AtcoderSubmission) error {
-	dbSubmissions := make([]db2.AtcoderSubmission, 0, len(submissions))
+	dbSubmissions := make([]db.AtcoderSubmission, 0, len(submissions))
 	for _, submission := range submissions {
-		dbSubmissions = append(dbSubmissions, db2.AtcoderSubmission{
+		dbSubmissions = append(dbSubmissions, db.AtcoderSubmission{
 			AtcoderUserID:    u.DBUser.ID,
 			AtcoderProblemID: submission.ProblemId,
 			SubmissionTime:   time.Unix(submission.SubmissionTime, 0),
 			Status:           submission.Status,
 		})
 	}
-	return db2.SaveAtcoderSubmissions(dbSubmissions)
+	return db.SaveAtcoderSubmissions(dbSubmissions)
 }
 
 func (u *AtcoderUser) loadFromCache(handle string) (err error) {
 	var data string
-	if data, err = cache2.GetAtcoderUser(handle); err != nil {
+	if data, err = cache.GetAtcoderUser(handle); err != nil {
 		return err
 	}
 	return json.Unmarshal([]byte(data), &u)
@@ -163,7 +163,7 @@ func (u *AtcoderUser) saveToCache() (err error) {
 	if data, err = json.Marshal(u); err != nil {
 		return err
 	}
-	if err = cache2.SetAtcoderUser(u.DBUser.Handle, data, 4*time.Hour); err != nil {
+	if err = cache.SetAtcoderUser(u.DBUser.Handle, data, 4*time.Hour); err != nil {
 		return err
 	}
 	return nil
@@ -173,7 +173,7 @@ func (u *AtcoderUser) saveToCache() (err error) {
 func (u *AtcoderUser) cruDBUser(handle string) (err error) {
 	isNewUser := false
 	if err = u.loadFromDB(handle); err != nil {
-		if !db2.IsNotFound(err) {
+		if !db.IsNotFound(err) {
 			return err
 		}
 		isNewUser = true
@@ -186,7 +186,7 @@ func (u *AtcoderUser) cruDBUser(handle string) (err error) {
 
 	lastSubmissionTime := time.Unix(0, 0)
 	if !isNewUser {
-		lastSubmission, err := db2.LoadLastAtcoderSubmissionByUID(u.DBUser.ID)
+		lastSubmission, err := db.LoadLastAtcoderSubmissionByUID(u.DBUser.ID)
 		if err != nil {
 			return err
 		}
@@ -228,8 +228,8 @@ func (u *AtcoderUser) process() (err error) {
 	// ---------------------------------------------------------------------- //
 	// 解题数据
 	// ---------------------------------------------------------------------- //
-	var solvedProblems []db2.AtcoderProblem
-	if solvedProblems, err = db2.LoadAtcoderSolvedProblemByUID(u.DBUser.ID); err != nil {
+	var solvedProblems []db.AtcoderProblem
+	if solvedProblems, err = db.LoadAtcoderSolvedProblemByUID(u.DBUser.ID); err != nil {
 		return err
 	}
 
@@ -250,7 +250,7 @@ func (u *AtcoderUser) process() (err error) {
 		return u.SolvedProblems[i].RatingRange > u.SolvedProblems[j].RatingRange
 	})
 
-	u.SolvedCount, err = db2.CountAtcoderSolvedByUID(u.DBUser.ID)
+	u.SolvedCount, err = db.CountAtcoderSolvedByUID(u.DBUser.ID)
 	return err
 }
 
@@ -261,7 +261,7 @@ func GetUpdatedAtcoderUser(handle string) (user *AtcoderUser, err error) {
 	defer lock.Unlock()
 
 	user = &AtcoderUser{}
-	if err = user.loadFromCache(handle); err != nil && !cache2.IsNil(err) {
+	if err = user.loadFromCache(handle); err != nil && !cache.IsNil(err) {
 		return nil, err
 	}
 

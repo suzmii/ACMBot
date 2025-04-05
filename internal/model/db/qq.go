@@ -2,7 +2,7 @@ package db
 
 import (
 	"errors"
-	"github.com/suzmii/ACMBot/pkg/errs"
+	"github.com/suzmii/ACMBot/internal/errs"
 	"sync"
 
 	"gorm.io/gorm"

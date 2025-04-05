@@ -2,9 +2,9 @@ package tasks
 
 import (
 	"context"
+	"github.com/suzmii/ACMBot/internal/model/bot"
+	"github.com/suzmii/ACMBot/internal/model/provider"
 	"github.com/suzmii/ACMBot/internal/util/ctxUtil"
-	"github.com/suzmii/ACMBot/pkg/model/bot"
-	"github.com/suzmii/ACMBot/pkg/model/provider"
 )
 
 func CodeforcesProfileHandler(ctx context.Context) error {

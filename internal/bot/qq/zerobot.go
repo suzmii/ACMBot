@@ -2,15 +2,14 @@ package qq
 
 import (
 	"context"
-	"github.com/suzmii/ACMBot/internal/logic/tasks"
-	"github.com/suzmii/ACMBot/internal/util/ctxUtil"
-	"github.com/suzmii/ACMBot/pkg/model/bot"
-
 	"errors"
 	"fmt"
 	bot2 "github.com/suzmii/ACMBot/internal/bot"
-	myMsg "github.com/suzmii/ACMBot/internal/bot/message"
-	"github.com/suzmii/ACMBot/pkg/errs"
+	"github.com/suzmii/ACMBot/internal/errs"
+	"github.com/suzmii/ACMBot/internal/logic/tasks"
+	"github.com/suzmii/ACMBot/internal/model/bot"
+	myMsg "github.com/suzmii/ACMBot/internal/model/message"
+	"github.com/suzmii/ACMBot/internal/util/ctxUtil"
 	"strings"
 	"time"
 

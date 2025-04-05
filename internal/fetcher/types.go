@@ -1,7 +1,7 @@
 package fetcher
 
 import (
-	"github.com/suzmii/ACMBot/pkg/model/race"
+	"github.com/suzmii/ACMBot/internal/model/race"
 	"time"
 )
 

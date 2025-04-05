@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/suzmii/ACMBot/pkg/errs"
+	"github.com/suzmii/ACMBot/internal/errs"
 	"io"
 	"net/http"
 	"strconv"

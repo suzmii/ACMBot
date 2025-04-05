@@ -2,8 +2,7 @@ package bot
 
 import (
 	"context"
-
-	"github.com/suzmii/ACMBot/internal/bot/message"
+	"github.com/suzmii/ACMBot/internal/model/message"
 )
 
 type Handler func(context.Context) error

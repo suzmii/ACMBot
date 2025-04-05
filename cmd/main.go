@@ -1,13 +1,16 @@
 package main
 
 import (
-	"github.com/suzmii/ACMBot/pkg/model/db"
+	"github.com/suzmii/ACMBot/internal/model/db"
+
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/sirupsen/logrus"
-	_ "github.com/suzmii/ACMBot/internal/bot/platforms/qq"
+
+	_ "github.com/suzmii/ACMBot/internal/bot/qq"
+	_ "github.com/suzmii/ACMBot/internal/log"
 )
 
 func main() {
