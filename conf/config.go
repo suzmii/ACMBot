@@ -14,7 +14,7 @@ var (
 	config = AllConfigStruct{}
 	once   sync.Once
 
-	configPath     = "./conf"
+	configPath     = "conf"
 	configName     = "conf"
 	configType     = "toml"
 	fullConfigPath = fmt.Sprintf("%s/%s.%s", configPath, configName, configType)

@@ -24,7 +24,7 @@ go.work.sum
 # env file
 .env
 
-conf.toml
+conf/conf.toml
 .VSCodeCounter
 _*
 .idea

@@ -3,42 +3,20 @@ package errs
 import (
 	"errors"
 	"fmt"
-	"runtime"
-	"strings"
 )
 
 type InternalError struct {
-	frames []runtime.Frame
-	text   string
+	text string
 }
 
 func (e InternalError) Error() string {
-	var stackTrace strings.Builder
-	for _, frame := range e.frames {
-		stackTrace.WriteString(fmt.Sprintf("%s:%d %s\n", frame.File, frame.Line, frame.Function))
-	}
-	return fmt.Sprintf("INTERNAL ERROR! %s\nstack:\n%s", e.text, stackTrace.String())
+	return fmt.Sprintf("INTERNAL ERROR: %s", e.text)
 }
 
 func NewInternalError(message string) InternalError {
 	return InternalError{
-		text:   message,
-		frames: GetCallStack(),
+		text: message,
 	}
-}
-
-func GetCallStack() []runtime.Frame {
-	var buf []uintptr
-	n := runtime.Callers(3, buf[:0]) // 跳过 GetCallStack 和它的调用者
-	buf = make([]uintptr, n)
-	n = runtime.Callers(3, buf)
-
-	var frames []runtime.Frame
-	for _, pc := range buf {
-		frame, _ := runtime.CallersFrames([]uintptr{pc}).Next()
-		frames = append(frames, frame)
-	}
-	return frames
 }
 
 type ErrHandleNotFound struct {

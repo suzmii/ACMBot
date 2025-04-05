@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/suzmii/ACMBot/internal/helper"
+	"github.com/suzmii/ACMBot/internal/util"
 )
 
 type Resource string
@@ -66,7 +66,7 @@ func (r *Race) String() string {
 				"传送门🌈: %s",
 			r.Source,
 			r.Name,
-			fmt.Sprintf("%02d天%02d小时%02d分钟", int(startLeftTime.Hours())/24, helper.Abs(int(startLeftTime.Hours()))%24, helper.Abs(int(startLeftTime.Minutes()))%60),
+			fmt.Sprintf("%02d天%02d小时%02d分钟", int(startLeftTime.Hours())/24, util.Abs(int(startLeftTime.Hours()))%24, util.Abs(int(startLeftTime.Minutes()))%60),
 			r.StartTime.In(time.Local).Format("2006-01-02 15:04:05"),
 			dStr,
 			r.Link,
@@ -84,7 +84,7 @@ func (r *Race) String() string {
 				"传送门🌈: %s",
 			r.Source,
 			r.Name,
-			fmt.Sprintf("%02d天%02d小时%02d分钟", int(endLeftTime.Hours())/24, helper.Abs(int(endLeftTime.Hours()))%24, helper.Abs(int(endLeftTime.Minutes()))%60),
+			fmt.Sprintf("%02d天%02d小时%02d分钟", int(endLeftTime.Hours())/24, util.Abs(int(endLeftTime.Hours()))%24, util.Abs(int(endLeftTime.Minutes()))%60),
 			r.StartTime.In(time.Local).Format("2006-01-02 15:04:05"),
 			dStr,
 			r.Link,
@@ -132,7 +132,7 @@ func (r *Race) NoUrlString() string {
 				"持续时间: %s\n",
 			r.Source.Name(),
 			r.Name,
-			fmt.Sprintf("%02d天%02d小时%02d分钟", int(startLeftTime.Hours())/24, helper.Abs(int(startLeftTime.Hours()))%24, helper.Abs(int(startLeftTime.Minutes()))%60),
+			fmt.Sprintf("%02d天%02d小时%02d分钟", int(startLeftTime.Hours())/24, util.Abs(int(startLeftTime.Hours()))%24, util.Abs(int(startLeftTime.Minutes()))%60),
 			r.StartTime.In(time.Local).Format("2006-01-02 15:04:05"),
 			dStr,
 		)
@@ -148,7 +148,7 @@ func (r *Race) NoUrlString() string {
 				"持续时间: %s\n",
 			r.Source.Name(),
 			r.Name,
-			fmt.Sprintf("%02d天%02d小时%02d分钟", int(endLeftTime.Hours())/24, helper.Abs(int(endLeftTime.Hours()))%24, helper.Abs(int(endLeftTime.Minutes()))%60),
+			fmt.Sprintf("%02d天%02d小时%02d分钟", int(endLeftTime.Hours())/24, util.Abs(int(endLeftTime.Hours()))%24, util.Abs(int(endLeftTime.Minutes()))%60),
 			r.StartTime.In(time.Local).Format("2006-01-02 15:04:05"),
 			dStr,
 		)
@@ -194,7 +194,7 @@ func (r *Race) Markdown() string {
 				"- 传送门🌈: %s",
 			r.Source,
 			r.Name,
-			fmt.Sprintf("%02d天%02d小时%02d分钟", int(startLeftTime.Hours())/24, helper.Abs(int(startLeftTime.Hours()))%24, helper.Abs(int(startLeftTime.Minutes()))%60),
+			fmt.Sprintf("%02d天%02d小时%02d分钟", int(startLeftTime.Hours())/24, util.Abs(int(startLeftTime.Hours()))%24, util.Abs(int(startLeftTime.Minutes()))%60),
 			r.StartTime.In(time.Local).Format("2006-01-02 15:04:05"),
 			dStr,
 			r.Link,
@@ -212,7 +212,7 @@ func (r *Race) Markdown() string {
 				"- 传送门🌈: %s",
 			r.Source,
 			r.Name,
-			fmt.Sprintf("%02d天%02d小时%02d分钟", int(endLeftTime.Hours())/24, helper.Abs(int(endLeftTime.Hours()))%24, helper.Abs(int(endLeftTime.Minutes()))%60),
+			fmt.Sprintf("%02d天%02d小时%02d分钟", int(endLeftTime.Hours())/24, util.Abs(int(endLeftTime.Hours()))%24, util.Abs(int(endLeftTime.Minutes()))%60),
 			r.StartTime.In(time.Local).Format("2006-01-02 15:04:05"),
 			dStr,
 			r.Link,

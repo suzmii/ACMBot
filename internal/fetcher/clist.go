@@ -3,7 +3,7 @@ package fetcher
 import (
 	"errors"
 	"fmt"
-	"github.com/suzmii/ACMBot/internal/helper"
+	"github.com/suzmii/ACMBot/internal/util"
 	"github.com/suzmii/ACMBot/pkg/model/race"
 	"time"
 
@@ -39,7 +39,7 @@ type clistResponse[T any] struct {
 
 func fetchClistAPI[T any](apiMethod string, args map[string]any) (T, error) {
 	if apiKey == "" {
-		return helper.Zero[T](), errors.New("api key empty")
+		return util.Zero[T](), errors.New("api key empty")
 	}
 
 	c := client.Clone()
@@ -52,12 +52,12 @@ func fetchClistAPI[T any](apiMethod string, args map[string]any) (T, error) {
 	fullURL := baseURL + apiMethod
 	res, err := c.R().Get(fullURL)
 	if err != nil {
-		return helper.Zero[T](), err
+		return util.Zero[T](), err
 	}
 	var result clistResponse[T]
 	err = res.UnmarshalJson(&result)
 	if err != nil {
-		return helper.Zero[T](), err
+		return util.Zero[T](), err
 	}
 	return result.Objects, nil
 }

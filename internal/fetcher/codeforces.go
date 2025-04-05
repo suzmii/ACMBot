@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/suzmii/ACMBot/internal/helper"
+	"github.com/suzmii/ACMBot/internal/util"
 	"github.com/suzmii/ACMBot/pkg/errs"
 	"io"
 	"net/http"
@@ -123,7 +123,7 @@ func fetchCodeforcesAPI[T any](apiMethod string, args map[string]any) (T, error)
 
 	resp, err := http.Get(apiFullURL)
 	if err != nil {
-		return helper.Zero[T](), err
+		return util.Zero[T](), err
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -134,15 +134,15 @@ func fetchCodeforcesAPI[T any](apiMethod string, args map[string]any) (T, error)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return helper.Zero[T](), err
+		return util.Zero[T](), err
 	}
 
 	var res codeforcesResponse[T]
 	if err := json.Unmarshal(body, &res); err != nil {
-		return helper.Zero[T](), err
+		return util.Zero[T](), err
 	}
 	if res.Status != "OK" {
-		return helper.Zero[T](), fmt.Errorf(res.Comment)
+		return util.Zero[T](), fmt.Errorf(res.Comment)
 	}
 
 	return res.Result, nil
