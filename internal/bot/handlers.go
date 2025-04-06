@@ -29,11 +29,11 @@ type CommandHandler struct {
 
 var (
 	Commands = []CommandHandler{
-		{[]string{"近期比赛"}, tasks.RaceHandler(manager.GetAllCachedRaces)},
-		{[]string{"近期cf"}, tasks.RaceHandler(manager.GetCachedRacesByResource(race.ResourceCodeforces))},
-		{[]string{"近期atc"}, tasks.RaceHandler(manager.GetCachedRacesByResource(race.ResourceAtcoder))},
-		{[]string{"近期nk"}, tasks.RaceHandler(manager.GetCachedRacesByResource(race.ResourceNowcoder))},
-		{[]string{"近期lg"}, tasks.RaceHandler(manager.GetCachedRacesByResource(race.ResourceLuogu))},
+		{[]string{"近期比赛"}, tasks.RaceHandler(manager.GetAllCachedRaceProvider())},
+		{[]string{"近期cf"}, tasks.RaceHandler(manager.GetRaceProviderByResource(race.ResourceCodeforces))},
+		{[]string{"近期atc"}, tasks.RaceHandler(manager.GetRaceProviderByResource(race.ResourceAtcoder))},
+		{[]string{"近期nk"}, tasks.RaceHandler(manager.GetRaceProviderByResource(race.ResourceNowcoder))},
+		{[]string{"近期lg"}, tasks.RaceHandler(manager.GetRaceProviderByResource(race.ResourceLuogu))},
 
 		{[]string{"cf"}, tasks.CodeforcesProfileHandler},
 		{[]string{"rt", "rating"}, tasks.CodeforcesRatingHandler},

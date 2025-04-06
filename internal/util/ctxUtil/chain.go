@@ -22,9 +22,14 @@ func (c *ChainContext) Execute() error {
 	ctx := c.ctx
 	var err error
 	for _, task := range c.tasks {
-		ctx, err = task(ctx)
-		if err != nil {
-			return err
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+			ctx, err = task(ctx)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil

@@ -3,6 +3,7 @@ package tasks
 import (
 	"context"
 	"fmt"
+
 	"github.com/suzmii/ACMBot/internal/errs"
 	"github.com/suzmii/ACMBot/internal/logic/manager"
 	"github.com/suzmii/ACMBot/internal/model/bot"
@@ -27,7 +28,7 @@ func getHandlerFromParams(ctx context.Context) (context.Context, error) {
 		handles_ = append(handles_, handle)
 	}
 
-	return ctxUtil.Set[handles](ctx, handles_), nil
+	return ctxUtil.Set(ctx, handles_), nil
 }
 
 // getCodeforcesUserByHandle []string -> *manager.CodeforcesUser
@@ -51,7 +52,7 @@ func getCodeforcesUserByHandle(ctx context.Context) (context.Context, error) {
 		return ctx, err
 	}
 
-	return ctxUtil.Set[codeforcesUser](ctx, user), nil
+	return ctxUtil.Set(ctx, user), nil
 }
 
 // getRenderedCodeforcesUserProfile *manager.CodeforcesUser -> []byte
@@ -121,14 +122,14 @@ func getAtcoderUserByHandle(ctx context.Context) (context.Context, error) {
 		return ctx, err
 	}
 
-	return ctxUtil.Set[atcoderUser](ctx, user), nil
+	return ctxUtil.Set(ctx, user), nil
 }
 
 // getRenderedAtcoderUserProfile *manager.AtcoderUser -> []byte
 func getRenderedAtcoderUserProfile(ctx context.Context) (context.Context, error) {
 	user, ok := ctxUtil.Get[atcoderUser](ctx)
 	if !ok {
-		return ctx, errs.NewInternalError("错误的参数类型")
+		return ctx, errs.NewInternalError("missing atcoder user in ctx")
 	}
 
 	pic, err := user.ToRenderProfile().ToImage()
