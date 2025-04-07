@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/suzmii/ACMBot/internal/model/cache"
 	"github.com/suzmii/ACMBot/internal/model/db"
-	"github.com/suzmii/ACMBot/internal/render"
+	"github.com/suzmii/ACMBot/internal/renderer"
 	"sort"
 	"sync"
 	"time"
@@ -34,33 +34,41 @@ type CodeforcesUser struct {
 	SolvedCount    int
 }
 
-func (u *CodeforcesUser) ToRenderProfileV1() *render.CodeforcesUser {
-	return &render.CodeforcesUser{
+func (u *CodeforcesUser) ToProfile() renderer.RenderAble {
+	return u.toRenderProfileV2()
+}
+
+func (u *CodeforcesUser) ToRating() renderer.RenderAble {
+	return u.toRenderRatingChanges()
+}
+
+func (u *CodeforcesUser) toRenderProfileV1() *renderer.CodeforcesUser {
+	return &renderer.CodeforcesUser{
 		Handle:   u.DBUser.Handle,
 		Avatar:   u.DBUser.Avatar,
 		Rating:   u.DBUser.Rating,
 		Solved:   u.SolvedCount,
 		FriendOf: u.DBUser.FriendCount,
-		Level:    render.ConvertRatingToLevel(u.DBUser.Rating),
+		Level:    renderer.ConvertRatingToLevel(u.DBUser.Rating),
 	}
 }
 
-func (u *CodeforcesUser) ToRenderRatingChanges() *render.CodeforcesRatingChanges {
-	ratingChanges := make([]render.CodeforcesRatingChange, len(u.DBUser.RatingChanges))
+func (u *CodeforcesUser) toRenderRatingChanges() *renderer.CodeforcesRatingChanges {
+	ratingChanges := make([]renderer.CodeforcesRatingChange, len(u.DBUser.RatingChanges))
 	for i, change := range u.DBUser.RatingChanges {
-		ratingChanges[i] = render.CodeforcesRatingChange{
+		ratingChanges[i] = renderer.CodeforcesRatingChange{
 			At:        change.At.Unix(),
 			NewRating: change.NewRating,
 		}
 	}
-	return &render.CodeforcesRatingChanges{
+	return &renderer.CodeforcesRatingChanges{
 		Data:   ratingChanges,
 		Handle: u.DBUser.Handle,
 	}
 }
 
-func (u *CodeforcesUser) ToRenderProfileV2() *render.CodeforcesUserProfile {
-	result := make([]render.CodeforcesUserSolvedData, 4)
+func (u *CodeforcesUser) toRenderProfileV2() *renderer.CodeforcesUserProfile {
+	result := make([]renderer.CodeforcesUserSolvedData, 4)
 
 	result[0].Range = "800+"
 	result[1].Range = "1400+"
@@ -85,14 +93,14 @@ func (u *CodeforcesUser) ToRenderProfileV2() *render.CodeforcesUserProfile {
 		result[k].Percent = float32(v.Count) / float32(u.SolvedCount) * 100
 	}
 
-	return &render.CodeforcesUserProfile{
+	return &renderer.CodeforcesUserProfile{
 		Avatar:     u.DBUser.Avatar,
 		Handle:     u.DBUser.Handle,
 		MaxRating:  u.DBUser.MaxRating,
 		FriendOf:   u.DBUser.FriendCount,
 		Rating:     u.DBUser.Rating,
 		Solved:     u.SolvedCount,
-		Level:      render.ConvertRatingToLevel(u.DBUser.Rating),
+		Level:      renderer.ConvertRatingToLevel(u.DBUser.Rating),
 		SolvedData: result,
 	}
 }

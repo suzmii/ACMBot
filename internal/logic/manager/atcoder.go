@@ -5,7 +5,7 @@ import (
 	"github.com/suzmii/ACMBot/internal/fetcher"
 	"github.com/suzmii/ACMBot/internal/model/cache"
 	"github.com/suzmii/ACMBot/internal/model/db"
-	"github.com/suzmii/ACMBot/internal/render"
+	"github.com/suzmii/ACMBot/internal/renderer"
 	"sort"
 	"sync"
 	"time"
@@ -24,8 +24,12 @@ type AtcoderUser struct {
 	SolvedCount    uint
 }
 
-func (u *AtcoderUser) ToRenderProfile() *render.AtcoderUserProfile {
-	result := make([]render.AtcoderSolvedData, 6)
+func (u *AtcoderUser) ToProfile() renderer.RenderAble {
+	return u.toRenderProfile()
+}
+
+func (u *AtcoderUser) toRenderProfile() *renderer.AtcoderUserProfile {
+	result := make([]renderer.AtcoderSolvedData, 6)
 	result[0].Range = "400"
 	result[1].Range = "800"
 	result[2].Range = "1200"
@@ -53,7 +57,7 @@ func (u *AtcoderUser) ToRenderProfile() *render.AtcoderUserProfile {
 	for k, v := range result {
 		result[k].Percent = float64(v.Count) / float64(u.SolvedCount) * 100
 	}
-	return &render.AtcoderUserProfile{
+	return &renderer.AtcoderUserProfile{
 		Avatar:           u.DBUser.Avatar,
 		Handle:           u.DBUser.Handle,
 		MaxRating:        u.DBUser.MaxRating,

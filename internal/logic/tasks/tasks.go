@@ -3,7 +3,6 @@ package tasks
 import (
 	"context"
 	"fmt"
-
 	"github.com/suzmii/ACMBot/internal/errs"
 	"github.com/suzmii/ACMBot/internal/logic/manager"
 	"github.com/suzmii/ACMBot/internal/model/bot"
@@ -47,42 +46,49 @@ func getCodeforcesUserByHandle(ctx context.Context) (context.Context, error) {
 	if len(handles) > 1 {
 		api.Send(message.Text("太多handle惹，我只查询`" + handles[0] + "`的哦"))
 	}
-	user, err := manager.GetUpdatedCodeforcesUser(handles[0])
+	user_, err := manager.GetUpdatedCodeforcesUser(handles[0])
 	if err != nil {
 		return ctx, err
 	}
 
-	return ctxUtil.Set(ctx, user), nil
+	return ctxUtil.Set(ctx, user{
+		Profile: user_,
+		Rating:  user_,
+	}), nil
 }
 
-// getRenderedCodeforcesUserProfile *manager.CodeforcesUser -> []byte
-func getRenderedCodeforcesUserProfile(ctx context.Context) (context.Context, error) {
-	user, ok := ctxUtil.Get[codeforcesUser](ctx)
+func userToProfile(ctx context.Context) (context.Context, error) {
+	user, ok := ctxUtil.Get[user](ctx)
 	if !ok {
-		return ctx, errs.NewInternalError("missing codeforces user in ctx")
+		return ctx, errs.NewInternalError("missing user info in ctx")
 	}
-
-	pic, err := user.ToRenderProfileV2().ToImage()
-	if err != nil {
-		return ctx, err
+	if user.Profile == nil {
+		return ctx, errs.NewInternalError("this user did not implemented profile renderPic interface")
 	}
-
-	return ctxUtil.Set[picMessage](ctx, pic), nil
+	return ctxUtil.Set(ctx, user.Profile.ToProfile()), nil
 }
 
-// getRenderedCodeforcesRatingChanges *manager.CodeforcesUser -> []byte
-func getRenderedCodeforcesRatingChanges(ctx context.Context) (context.Context, error) {
-	user, ok := ctxUtil.Get[codeforcesUser](ctx)
+func userToRating(ctx context.Context) (context.Context, error) {
+	user, ok := ctxUtil.Get[user](ctx)
 	if !ok {
-		return ctx, errs.NewInternalError("missing codeforces user in ctx")
+		return ctx, errs.NewInternalError("missing user info in ctx")
 	}
+	if user.Rating == nil {
+		return ctx, errs.NewInternalError("this user did not implemented rating renderPic interface")
+	}
+	return ctxUtil.Set(ctx, user.Rating.ToRating()), nil
+}
 
-	pic, err := user.ToRenderRatingChanges().ToImage()
+func renderPic(ctx context.Context) (context.Context, error) {
+	obj, ok := ctxUtil.Get[renderAble](ctx)
+	if !ok {
+		return ctx, errs.NewInternalError("missing renderPic object in ctx")
+	}
+	data, err := obj.ToImage()
 	if err != nil {
 		return ctx, err
 	}
-
-	return ctxUtil.Set[picMessage](ctx, pic), nil
+	return ctxUtil.Set[picMessage](ctx, data), nil
 }
 
 // getRaceFromProvider model.RaceProvider -> []model.Race
@@ -117,27 +123,15 @@ func getAtcoderUserByHandle(ctx context.Context) (context.Context, error) {
 		api.Send(message.Text("太多handle惹，我只查询`" + handles[0] + "`的哦"))
 	}
 
-	user, err := manager.GetUpdatedAtcoderUser(handles[0])
+	user_, err := manager.GetUpdatedAtcoderUser(handles[0])
 	if err != nil {
 		return ctx, err
 	}
 
-	return ctxUtil.Set(ctx, user), nil
-}
-
-// getRenderedAtcoderUserProfile *manager.AtcoderUser -> []byte
-func getRenderedAtcoderUserProfile(ctx context.Context) (context.Context, error) {
-	user, ok := ctxUtil.Get[atcoderUser](ctx)
-	if !ok {
-		return ctx, errs.NewInternalError("missing atcoder user in ctx")
-	}
-
-	pic, err := user.ToRenderProfile().ToImage()
-	if err != nil {
-		return ctx, err
-	}
-
-	return ctxUtil.Set[picMessage](ctx, pic), nil
+	return ctxUtil.Set(ctx, user{
+		Profile: user_,
+		Rating:  nil,
+	}), nil
 }
 
 // bindCodeforcesUser []string -> nil

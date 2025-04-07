@@ -11,7 +11,8 @@ func CodeforcesProfileHandler(ctx context.Context) error {
 	return ctxUtil.NewChainContext(ctx).
 		Then(getHandlerFromParams).
 		Then(getCodeforcesUserByHandle).
-		Then(getRenderedCodeforcesUserProfile).
+		Then(userToProfile).
+		Then(renderPic).
 		Then(sendPicture).
 		Execute()
 }
@@ -20,7 +21,8 @@ func CodeforcesRatingHandler(ctx context.Context) error {
 	return ctxUtil.NewChainContext(ctx).
 		Then(getHandlerFromParams).
 		Then(getCodeforcesUserByHandle).
-		Then(getRenderedCodeforcesRatingChanges).
+		Then(userToRating).
+		Then(renderPic).
 		Then(sendPicture).
 		Execute()
 }
@@ -29,7 +31,8 @@ func AtcoderProfileHandler(ctx context.Context) error {
 	return ctxUtil.NewChainContext(ctx).
 		Then(getHandlerFromParams).
 		Then(getAtcoderUserByHandle).
-		Then(getRenderedAtcoderUserProfile).
+		Then(userToProfile).
+		Then(renderPic).
 		Then(sendPicture).
 		Execute()
 }
