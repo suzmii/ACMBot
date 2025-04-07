@@ -1,4 +1,4 @@
-package render
+package renderer
 
 type QQUserInfo struct {
 	Avatar           string

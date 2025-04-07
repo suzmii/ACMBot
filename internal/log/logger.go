@@ -20,12 +20,12 @@ const (
 )
 
 func init() {
-	logrus.SetFormatter(&LogFormatter{})
+	logrus.SetFormatter(&format{})
 }
 
-type LogFormatter struct{}
+type format struct{}
 
-func (f *LogFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+func (f *format) Format(entry *logrus.Entry) ([]byte, error) {
 	var color string
 	switch entry.Level {
 	case logrus.TraceLevel:

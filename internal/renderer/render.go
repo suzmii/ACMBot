@@ -1,4 +1,4 @@
-package render
+package renderer
 
 import (
 	"github.com/playwright-community/playwright-go"
@@ -25,11 +25,15 @@ type Error struct {
 }
 
 func (e Error) Error() string {
-	return "render error😰: " + e.msg
+	return "renderer error😰: " + e.msg
+}
+
+type RenderAble interface {
+	ToImage() ([]byte, error)
 }
 
 const (
-	templatePath                        = "internal/render/templates/"
+	templatePath                        = "internal/renderer/templates/"
 	CodeforcesUserProfileV1TemplatePath = templatePath + "codeforces_profile_v1.html"
 	CodeforcesUserProfileV2TemplatePath = templatePath + "codeforces_profile_v2.html"
 	CodeforcesRatingChangesTemplatePath = templatePath + "codeforces_rating_change.html"
@@ -102,9 +106,9 @@ func Html(PageOpt *playwright.BrowserNewPageOptions, HTMLOpt *HtmlOptions) ([]by
 	}
 	defer page.Close()
 
-	//if !strings.HasPrefix(HTMLOpt.Path, "file://") {
+	// if !strings.HasPrefix(HTMLOpt.Path, "file://") {
 	//	HTMLOpt.Path = "file://" + HTMLOpt.Path
-	//}
+	// }
 	if _, err = page.Goto("file://" + HTMLOpt.Path); err != nil {
 		return nil, Error{msg: err.Error()}
 	}

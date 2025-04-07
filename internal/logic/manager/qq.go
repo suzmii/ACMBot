@@ -6,7 +6,7 @@ import (
 	"github.com/suzmii/ACMBot/internal/errs"
 	"github.com/suzmii/ACMBot/internal/fetcher"
 	"github.com/suzmii/ACMBot/internal/model/db"
-	"github.com/suzmii/ACMBot/internal/render"
+	"github.com/suzmii/ACMBot/internal/renderer"
 	"sort"
 
 	log "github.com/sirupsen/logrus"
@@ -63,7 +63,7 @@ func BindQQAndCodeforcesHandler(qqBind QQBind) error {
 	return nil
 }
 
-func GetGroupRank(qqGroup QQGroup) (*render.QQGroupRank, error) {
+func GetGroupRank(qqGroup QQGroup) (*renderer.QQGroupRank, error) {
 	var rank *db.QQGroupRank
 	var err error
 	if rank, err = db.GetQQGroupRank(qqGroup.QQGroupID); err != nil {
@@ -73,12 +73,12 @@ func GetGroupRank(qqGroup QQGroup) (*render.QQGroupRank, error) {
 	sort.Slice(rank.QQUsers, func(i, j int) bool {
 		return rank.QQUsers[i].CodeforcesRating > rank.QQUsers[j].CodeforcesRating
 	})
-	var qqGroupRank = render.QQGroupRank{
+	var qqGroupRank = renderer.QQGroupRank{
 		QQGroupName: qqGroup.QQGroupName,
-		QQUsers:     make([]*render.QQUserInfo, 0),
+		QQUsers:     make([]*renderer.QQUserInfo, 0),
 	}
 	for index, user := range rank.QQUsers {
-		var QQUser = render.QQUserInfo{
+		var QQUser = renderer.QQUserInfo{
 			QName:            user.QName,
 			CodeforcesRating: user.CodeforcesRating,
 			RankInGroup:      uint(index) + 1,
