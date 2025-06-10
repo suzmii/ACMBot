@@ -2,13 +2,14 @@ package manager
 
 import (
 	"encoding/json"
+	"sort"
+	"sync"
+	"time"
+
 	"github.com/suzmii/ACMBot/internal/fetcher"
 	"github.com/suzmii/ACMBot/internal/model/cache"
 	"github.com/suzmii/ACMBot/internal/model/db"
 	"github.com/suzmii/ACMBot/internal/renderer"
-	"sort"
-	"sync"
-	"time"
 )
 
 var updatingAtcoderUserUser sync.Map
@@ -76,7 +77,11 @@ func (u *AtcoderUser) fromFetcherUserInfo(user *fetcher.AtcoderUser) error {
 	u.DBUser.Rating = user.Rating
 	u.DBUser.MaxRating = user.HighestRating
 	u.DBUser.Level = user.Dan
-	u.DBUser.PromotionMessage = user.PromotionMessage[1 : len(user.PromotionMessage)-1]
+	if len(user.PromotionMessage) < 2 {
+		u.DBUser.PromotionMessage = ""
+	} else {
+		u.DBUser.PromotionMessage = user.PromotionMessage[1 : len(user.PromotionMessage)-1]
+	}
 	u.DBUser.CreatedAt = time.Now()
 	return nil
 }
