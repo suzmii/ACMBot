@@ -10,31 +10,31 @@ import (
 
 func FetchContest(c *model.Context) error {
 	var contestList []model.Race
-	if cList, err := client.FetchClistCodeforcesContests(); err == nil {
-		contestList = append(contestList, cList...)
-	} else {
+	cList, err := client.FetchClistCodeforcesContests()
+	if err != nil {
 		return err
 	}
-	if cList, err := client.FetchClistAtcoderContests(); err == nil {
-		contestList = append(contestList, cList...)
-	} else {
+	contestList = append(contestList, cList...)
+	cList, err = client.FetchClistAtcoderContests()
+	if err != nil {
 		return err
 	}
-	if cList, err := client.FetchClistLeetcodeContests(); err == nil {
-		contestList = append(contestList, cList...)
-	} else {
+	contestList = append(contestList, cList...)
+	cList, err = client.FetchClistLeetcodeContests()
+	if err != nil {
 		return err
 	}
-	if cList, err := client.FetchClistLuoguContests(); err == nil {
-		contestList = append(contestList, cList...)
-	} else {
+	contestList = append(contestList, cList...)
+	cList, err = client.FetchClistLuoguContests()
+	if err != nil {
 		return err
 	}
-	if cList, err := client.FetchClistNowcoderContests(); err == nil {
-		contestList = append(contestList, cList...)
-	} else {
+	contestList = append(contestList, cList...)
+	cList, err = client.FetchClistNowcoderContests()
+	if err != nil {
 		return err
 	}
+	contestList = append(contestList, cList...)
 	sort.Slice(contestList, func(i, j int) bool {
 		return contestList[i].StartTime.Before(contestList[j].StartTime)
 	})
