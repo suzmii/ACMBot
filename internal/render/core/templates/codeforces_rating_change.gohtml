@@ -60,7 +60,7 @@
             String(today.getMonth() + 1).padStart(2, '0') + '-' +
             String(today.getDate()).padStart(2, '0');
 
-        option = {
+        const option = {
             animation: false,
             grid: {
                 left: '8%',  // 图表左边距，可以是像素值（如 '100'）或者百分比（如 '10%'）
@@ -131,22 +131,24 @@
                 markArea: {
                     silent: true,
                     data: [
-                        [{ yAxis: 0 }, { yAxis: 1200, itemStyle: { color: '#CCCCCC' } }],
-                        [{ yAxis: 1200 }, { yAxis: 1400, itemStyle: { color: '#77FF77' } }],
-                        [{ yAxis: 1400 }, { yAxis: 1600, itemStyle: { color: '#77DDBB' } }],
-                        [{ yAxis: 1600 }, { yAxis: 1900, itemStyle: { color: '#AAAAFF' } }],
-                        [{ yAxis: 1900 }, { yAxis: 2100, itemStyle: { color: '#FF88FF' } }],
-                        [{ yAxis: 2100 }, { yAxis: 2300, itemStyle: { color: '#FFCC88' } }],
-                        [{ yAxis: 2300 }, { yAxis: 2400, itemStyle: { color: '#FFBB55' } }],
-                        [{ yAxis: 2400 }, { yAxis: 2600, itemStyle: { color: '#FF7777' } }],
-                        [{ yAxis: 2600 }, { yAxis: 3000, itemStyle: { color: '#FF3333' } }],
-                        [{ yAxis: 3000 }, { yAxis: 4000, itemStyle: { color: '#AA0000' } }],
-                        [{ yAxis: 4000 }, { yAxis: 9999, itemStyle: { color: {
+                        [{yAxis: 0}, {yAxis: 1200, itemStyle: {color: '#CCCCCC'}}],
+                        [{yAxis: 1200}, {yAxis: 1400, itemStyle: {color: '#77FF77'}}],
+                        [{yAxis: 1400}, {yAxis: 1600, itemStyle: {color: '#77DDBB'}}],
+                        [{yAxis: 1600}, {yAxis: 1900, itemStyle: {color: '#AAAAFF'}}],
+                        [{yAxis: 1900}, {yAxis: 2100, itemStyle: {color: '#FF88FF'}}],
+                        [{yAxis: 2100}, {yAxis: 2300, itemStyle: {color: '#FFCC88'}}],
+                        [{yAxis: 2300}, {yAxis: 2400, itemStyle: {color: '#FFBB55'}}],
+                        [{yAxis: 2400}, {yAxis: 2600, itemStyle: {color: '#FF7777'}}],
+                        [{yAxis: 2600}, {yAxis: 3000, itemStyle: {color: '#FF3333'}}],
+                        [{yAxis: 3000}, {yAxis: 4000, itemStyle: {color: '#AA0000'}}],
+                        [{yAxis: 4000}, {
+                            yAxis: 9999, itemStyle: {
+                                color: {
                                     type: 'linear',
                                     x: 0,
                                     y: 0,
                                     x2: 1,
-                                    y2: 1/4,
+                                    y2: 1 / 4,
                                     colorStops: [
                                         {offset: 0, color: '#FF0000'},
                                         {offset: 1 / 6, color: '#FFA500'},
@@ -157,7 +159,9 @@
                                         {offset: 1, color: '#9400D3'}
                                     ],
                                     global: false
-                                } } }],
+                                }
+                            }
+                        }],
                     ]
                 },
                 markLine: {
@@ -168,16 +172,16 @@
                         formatter: '{c}'
                     },
                     data: [
-                        { yAxis: 1200 },
-                        { yAxis: 1400 },
-                        { yAxis: 1600 },
-                        { yAxis: 1900 },
-                        { yAxis: 2100 },
-                        { yAxis: 2300 },
-                        { yAxis: 2400 },
-                        { yAxis: 2600 },
-                        { yAxis: 3000 },
-                        { yAxis: 4000 },
+                        {yAxis: 1200},
+                        {yAxis: 1400},
+                        {yAxis: 1600},
+                        {yAxis: 1900},
+                        {yAxis: 2100},
+                        {yAxis: 2300},
+                        {yAxis: 2400},
+                        {yAxis: 2600},
+                        {yAxis: 3000},
+                        {yAxis: 4000},
 
                     ],
                     lineStyle: {

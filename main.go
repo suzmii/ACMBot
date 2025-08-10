@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/suzmii/ACMBot/internal/adapter/qq"
-	"github.com/suzmii/ACMBot/internal/database"
-	"github.com/suzmii/ACMBot/internal/handler"
-	"github.com/suzmii/ACMBot/internal/render"
-	"github.com/suzmii/ACMBot/internal/util/logger"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/suzmii/ACMBot/internal/adapter/qq"
+	"github.com/suzmii/ACMBot/internal/database"
+	"github.com/suzmii/ACMBot/internal/handler"
+	"github.com/suzmii/ACMBot/internal/render/core"
+	"github.com/suzmii/ACMBot/internal/util/logger"
 )
 
 import _ "net/http/pprof"
@@ -21,7 +22,7 @@ func main() {
 
 	logger.Init()
 	database.Init()
-	render.Init()
+	core.Init()
 
 	qqAdapter := qq.NewZeroBotAdapter()
 	qqAdapter.Bind(handler.Events)

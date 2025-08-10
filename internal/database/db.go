@@ -3,6 +3,7 @@ package database
 import (
 	"errors"
 	"fmt"
+
 	"github.com/suzmii/ACMBot/config"
 	"github.com/suzmii/ACMBot/internal/database/gen"
 

@@ -3,13 +3,14 @@ package repo
 import (
 	"context"
 	"errors"
+	"sync"
+	"time"
+
 	"github.com/suzmii/ACMBot/internal/database/dbmodel"
 	"github.com/suzmii/ACMBot/internal/database/gen"
 	"github.com/suzmii/ACMBot/internal/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"sync"
-	"time"
 )
 
 //func (r *Repo) CountSolvedProblem(ctx context.Context, uid uint) (int64, error) {

@@ -111,38 +111,37 @@
 
 </body>
 <script>
-    if (typeof ColorTheme === 'undefined') {
-        var ColorTheme = class {
-            constructor(c1,c3,c4,cl,cb) {
-                this.background = c1;
-                this.upperCardBackground = c3;
-                this.bottomCardBackground = c3;
-                this.upperCardShadow = c4;
-                this.bottomCardShadow = c4;
-                this.maxRatingBackground = cb;
-                this.starsBackground = cb;
-                this.lineBackground = cl;
+    (
+        ()=>{
+            window.ColorTheme = class {
+                constructor(c1, c3, c4, cl, cb) {
+                    this.background = c1;
+                    this.upperCardBackground = c3;
+                    this.bottomCardBackground = c3;
+                    this.upperCardShadow = c4;
+                    this.bottomCardShadow = c4;
+                    this.maxRatingBackground = cb;
+                    this.starsBackground = cb;
+                    this.lineBackground = cl;
+                }
+            };
+
+            window.colorMap = {
+                "Newbie":     new ColorTheme("gray-400", "gray-500", "gray-800", "gray-100", "gray-600"),
+                "Pupil":      new ColorTheme("lime-400", "lime-500", "lime-800", "lime-100", "lime-600"),
+                "Specialist": new ColorTheme("cyan-400", "cyan-500", "cyan-800", "cyan-100", "cyan-600"),
+                "Expert":     new ColorTheme("blue-400", "blue-500", "blue-800", "blue-100", "blue-600"),
+                "CM":         new ColorTheme("indigo-400", "indigo-500", "indigo-800", "indigo-100", "indigo-600"),
+                "Master":     new ColorTheme("[#FFA726]", "[#FF9800]", "[#EF6C00]", "[#FFE0B2]", "[#FB8C00]"),
+                "IM":         new ColorTheme("[#FFA726]", "[#FF9800]", "[#EF6C00]", "[#FFE0B2]", "[#FB8C00]"),
+                "GM":         new ColorTheme("rose-400", "rose-500", "rose-800", "rose-100", "rose-600"),
+                "IGM":        new ColorTheme("red-400", "red-500", "red-800", "red-100", "red-600"),
+                "LGM":        new ColorTheme("red-400", "red-500", "red-800", "red-100", "red-600"),
+                "Tourist":    new ColorTheme("red-400", "red-500", "red-800", "red-100", "red-600"),
             }
         }
-    }
+    )()
 
-
-    // new ColorTheme("#", "#", "#", "#", "#", "#", "#", "#"),
-    // 2-6-4
-    // new ColorTheme("#", "#", "#", "#", "#"),
-    const colorMap = {
-        "Newbie":     new ColorTheme("gray-400", "gray-500", "gray-800", "gray-100", "gray-600"),
-        "Pupil":      new ColorTheme("lime-400", "lime-500", "lime-800", "lime-100", "lime-600"),
-        "Specialist": new ColorTheme("cyan-400", "cyan-500", "cyan-800", "cyan-100", "cyan-600"),
-        "Expert":     new ColorTheme("blue-400", "blue-500", "blue-800", "blue-100", "blue-600"),
-        "CM":         new ColorTheme("indigo-400", "indigo-500", "indigo-800", "indigo-100", "indigo-600"),
-        "Master":     new ColorTheme("[#FFA726]", "[#FF9800]", "[#EF6C00]", "[#FFE0B2]", "[#FB8C00]"),
-        "IM":         new ColorTheme("[#FFA726]", "[#FF9800]", "[#EF6C00]", "[#FFE0B2]", "[#FB8C00]"),
-        "GM":         new ColorTheme("rose-400", "rose-500", "rose-800", "rose-100", "rose-600"),
-        "IGM":        new ColorTheme("red-400", "red-500", "red-800", "red-100", "red-600"),
-        "LGM":        new ColorTheme("red-400", "red-500", "red-800", "red-100", "red-600"),
-        "Tourist":    new ColorTheme("red-400", "red-500", "red-800", "red-100", "red-600"),
-    }
 
     document.addEventListener("DOMContentLoaded", function () {
         const timeElement = document.getElementById("time");

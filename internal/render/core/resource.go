@@ -1,4 +1,4 @@
-package render
+package core
 
 import (
 	_ "embed"

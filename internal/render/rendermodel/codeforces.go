@@ -1,8 +1,9 @@
 package rendermodel
 
 import (
-	"github.com/suzmii/ACMBot/internal/model"
 	"html/template"
+
+	"github.com/suzmii/ACMBot/internal/model"
 )
 
 type CodeforcesRatingChange struct {
