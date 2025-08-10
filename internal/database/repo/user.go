@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+
 	"github.com/suzmii/ACMBot/internal/database/dbmodel"
 	"github.com/suzmii/ACMBot/internal/database/gen"
 )

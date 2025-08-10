@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"github.com/suzmii/ACMBot/internal/database/repo"
 	"github.com/suzmii/ACMBot/internal/datasync"
@@ -8,7 +10,6 @@ import (
 	"github.com/suzmii/ACMBot/internal/render"
 	"github.com/suzmii/ACMBot/internal/render/rendermodel"
 	"github.com/suzmii/ACMBot/internal/util/param"
-	"time"
 )
 
 func RatingDetailHandler(c *model.Context) error {

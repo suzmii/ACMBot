@@ -1,8 +1,9 @@
 package dbmodel
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Resource int

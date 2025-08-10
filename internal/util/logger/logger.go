@@ -1,11 +1,12 @@
 package logger
 
 import (
-	"github.com/suzmii/ACMBot/config"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/suzmii/ACMBot/config"
 
 	"github.com/sirupsen/logrus"
 )

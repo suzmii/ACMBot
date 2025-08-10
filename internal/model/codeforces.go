@@ -1,9 +1,10 @@
 package model
 
 import (
+	"time"
+
 	"github.com/suzmii/ACMBot/internal/database/dbmodel"
 	"gorm.io/gorm"
-	"time"
 )
 
 type RatingRecord struct {

@@ -1,9 +1,10 @@
 package client
 
 import (
-	"github.com/suzmii/ACMBot/internal/errs"
 	"testing"
 	"time"
+
+	"github.com/suzmii/ACMBot/internal/errs"
 )
 
 var (

@@ -3,6 +3,7 @@ package qq
 import (
 	"encoding/base64"
 	"encoding/json"
+
 	"github.com/sirupsen/logrus"
 	"github.com/wdvxdr1123/ZeroBot/message"
 )

@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"errors"
+
 	"github.com/suzmii/ACMBot/internal/database/dbmodel"
 	"github.com/suzmii/ACMBot/internal/database/gen"
 	"gorm.io/gorm"

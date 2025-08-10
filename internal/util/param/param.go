@@ -1,8 +1,9 @@
 package param
 
 import (
-	"github.com/suzmii/ACMBot/internal/errs"
 	"strings"
+
+	"github.com/suzmii/ACMBot/internal/errs"
 )
 
 func AsCodeforcesUsername(p []string) (string, error) {

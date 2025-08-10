@@ -5,10 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/suzmii/ACMBot/config"
-	"github.com/suzmii/ACMBot/internal/api/model"
-	"github.com/suzmii/ACMBot/internal/errs"
-	"github.com/suzmii/ACMBot/internal/util"
 	"io"
 	"net/http"
 	"sort"
@@ -16,6 +12,11 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/suzmii/ACMBot/config"
+	"github.com/suzmii/ACMBot/internal/api/model"
+	"github.com/suzmii/ACMBot/internal/errs"
+	"github.com/suzmii/ACMBot/internal/util"
 
 	"math/rand"
 

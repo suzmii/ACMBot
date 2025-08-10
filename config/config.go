@@ -2,10 +2,11 @@ package config
 
 import (
 	"errors"
+	"sync"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/suzmii/ACMBot/config/subconfig"
-	"sync"
 )
 
 type Config struct {

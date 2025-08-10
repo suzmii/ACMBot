@@ -2,8 +2,9 @@ package model
 
 import (
 	"fmt"
-	"github.com/suzmii/ACMBot/internal/model"
 	"time"
+
+	"github.com/suzmii/ACMBot/internal/model"
 )
 
 type User struct {

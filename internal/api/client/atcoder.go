@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/suzmii/ACMBot/internal/errs"
 	"io"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/suzmii/ACMBot/internal/errs"
 
 	"golang.org/x/time/rate"
 

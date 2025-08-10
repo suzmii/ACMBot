@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"github.com/suzmii/ACMBot/config"
 	"github.com/suzmii/ACMBot/internal/errs"
@@ -11,8 +14,6 @@ import (
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/driver"
 	zMsg "github.com/wdvxdr1123/ZeroBot/message"
-	"strings"
-	"time"
 )
 
 func NewZeroBotAdapter() *ZeroBotAdapter {
