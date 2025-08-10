@@ -10,27 +10,27 @@ import (
 
 func FetchContest(c *model.Context) error {
 	var contestList []model.Race
-	if cList, err := client.FetchClistCodeforcesContests(); err != nil {
+	if cList, err := client.FetchClistCodeforcesContests(); err == nil {
 		contestList = append(contestList, cList...)
 	} else {
 		return err
 	}
-	if cList, err := client.FetchClistAtcoderContests(); err != nil {
+	if cList, err := client.FetchClistAtcoderContests(); err == nil {
 		contestList = append(contestList, cList...)
 	} else {
 		return err
 	}
-	if cList, err := client.FetchClistLeetcodeContests(); err != nil {
+	if cList, err := client.FetchClistLeetcodeContests(); err == nil {
 		contestList = append(contestList, cList...)
 	} else {
 		return err
 	}
-	if cList, err := client.FetchClistLuoguContests(); err != nil {
+	if cList, err := client.FetchClistLuoguContests(); err == nil {
 		contestList = append(contestList, cList...)
 	} else {
 		return err
 	}
-	if cList, err := client.FetchClistNowcoderContests(); err != nil {
+	if cList, err := client.FetchClistNowcoderContests(); err == nil {
 		contestList = append(contestList, cList...)
 	} else {
 		return err
