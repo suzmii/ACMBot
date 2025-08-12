@@ -105,7 +105,7 @@ func Submissions(ctx context.Context, user model.User) error {
 	after := time.Time{}
 
 	if submission != nil {
-		logrus.Debug("got submission: %v", submission)
+		logrus.Debugf("got submission: %+v", submission)
 		after = submission.CreatedAt
 	}
 

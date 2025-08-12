@@ -30,7 +30,7 @@ func RatingDetailHandler(c *model.Context) error {
 	var records model.RatingRecords
 	logrus.Debug(ratingRecords)
 
-	if ratingRecords != nil && time.Now().Sub(ratingRecords.UpdatedAt) < 4*time.Hour {
+	if ratingRecords != nil && time.Since(ratingRecords.UpdatedAt) < 4*time.Hour {
 		records = model.RatingRecordsFromRepo(*ratingRecords)
 	} else {
 		records, err = datasync.RatingRecords(c.Ctx, user)
@@ -63,14 +63,14 @@ func ProfileHandler(c *model.Context) error {
 		return err
 	}
 
-	if time.Now().Sub(user.UpdatedAt) > 4*time.Hour {
+	if time.Since(user.UpdatedAt) > 4*time.Hour {
 		user, err = datasync.User(c.Ctx, username)
 		if err != nil {
 			return err
 		}
 	}
 
-	if time.Now().Sub(user.SubmissionUpdatedAt) > 24*time.Hour {
+	if time.Since(user.SubmissionUpdatedAt) > 24*time.Hour {
 		err = datasync.Submissions(c.Ctx, user)
 		if err != nil {
 			return err

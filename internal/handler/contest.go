@@ -5,36 +5,15 @@ import (
 	"sort"
 
 	"github.com/suzmii/ACMBot/internal/api/client"
+	"github.com/suzmii/ACMBot/internal/datasync"
 	"github.com/suzmii/ACMBot/internal/model"
 )
 
 func FetchContest(c *model.Context) error {
-	var contestList []model.Race
-	cList, err := client.FetchClistCodeforcesContests()
+	contestList, err := datasync.GetRaces(c.Ctx)
 	if err != nil {
 		return err
 	}
-	contestList = append(contestList, cList...)
-	cList, err = client.FetchClistAtcoderContests()
-	if err != nil {
-		return err
-	}
-	contestList = append(contestList, cList...)
-	cList, err = client.FetchClistLeetcodeContests()
-	if err != nil {
-		return err
-	}
-	contestList = append(contestList, cList...)
-	cList, err = client.FetchClistLuoguContests()
-	if err != nil {
-		return err
-	}
-	contestList = append(contestList, cList...)
-	cList, err = client.FetchClistNowcoderContests()
-	if err != nil {
-		return err
-	}
-	contestList = append(contestList, cList...)
 	sort.Slice(contestList, func(i, j int) bool {
 		return contestList[i].StartTime.Before(contestList[j].StartTime)
 	})

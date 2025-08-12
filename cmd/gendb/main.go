@@ -23,6 +23,8 @@ func main() {
 
 	// 只针对已有的结构体生成代码
 	g.ApplyInterface(func(model.Method) {}, codeforcesrepo.CodeforcesModels...) // 你可以添加多个 struct
+	// 确保 races 也纳入生成，避免手改 gen 代码
+	g.ApplyBasic(new(codeforcesrepo.Races))
 
 	// 生成代码
 	g.Execute()

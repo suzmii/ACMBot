@@ -2,10 +2,11 @@ package config
 
 import (
 	"errors"
+	"sync"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/suzmii/ACMBot/config/subconfig"
-	"sync"
 )
 
 type Config struct {
@@ -13,6 +14,7 @@ type Config struct {
 	Database subconfig.Database `mapstructure:"database"`
 	Logger   subconfig.Logger   `mapstructure:"logger"`
 	ZeroBot  subconfig.ZeroBot  `mapstructure:"zerobot"`
+	Sync     subconfig.Sync     `mapstructure:"sync"`
 }
 
 var DefaultConfig = Config{
@@ -20,6 +22,7 @@ var DefaultConfig = Config{
 	Database: subconfig.DefaultDB,
 	Logger:   subconfig.DefaultLogger,
 	ZeroBot:  subconfig.DefaultZeroBot,
+	Sync:     subconfig.DefaultSync,
 }
 
 var (
@@ -32,6 +35,7 @@ func LoadConfig() *Config {
 		v := viper.New()
 		v.SetConfigName("config")
 		v.SetConfigType("toml")
+		v.AddConfigPath("config")
 		v.AddConfigPath(".")
 
 		// 先尝试读取配置文件
@@ -44,9 +48,10 @@ func LoadConfig() *Config {
 				v.Set("database", DefaultConfig.Database)
 				v.Set("logger", DefaultConfig.Logger)
 				v.Set("zerobot", DefaultConfig.ZeroBot)
+				v.Set("sync", DefaultConfig.Sync)
 
 				if err := v.SafeWriteConfigAs("config.toml"); err != nil {
-					logrus.Fatal("Failed to write default config: %v", err)
+					logrus.Fatalf("Failed to write default config: %v", err)
 				}
 				logrus.Fatal("已生成默认配置文件，请填写后再次运行")
 			}
