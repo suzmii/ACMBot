@@ -58,8 +58,12 @@ func GetRaces(ctx context.Context) ([]model.Race, error) {
 			return nil, err
 		}
 
-		// Delete finished races
-		if err := repo.DeleteFinishedRaces(ctx, time.Now()); err != nil {
+		// Delete finished races after keep hours
+		keepHours := config.LoadConfig().Sync.RaceKeepHours
+		if keepHours <= 0 {
+			keepHours = 24
+		}
+		if err := repo.DeleteFinishedRaces(ctx, time.Now(), keepHours); err != nil {
 			return nil, err
 		}
 

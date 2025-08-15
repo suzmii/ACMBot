@@ -37,11 +37,11 @@ func GetLatestRaceUpdatedAt(ctx context.Context) (time.Time, error) {
 	return race.UpdatedAt, nil
 }
 
-// DeleteFinishedRaces soft-deletes races that have already ended.
-func DeleteFinishedRaces(ctx context.Context, now time.Time) error {
+// DeleteFinishedRaces soft-deletes races that have already ended and exceeded keep hours.
+func DeleteFinishedRaces(ctx context.Context, now time.Time, keepHours int) error {
 	races, err := gen.Q.WithContext(ctx).
 		Races.
-		Where(gen.Races.EndAt.Lt(now)).
+		Where(gen.Races.EndAt.Lt(now.Add(-time.Duration(keepHours) * time.Hour))).
 		Find()
 	if err != nil {
 		return err
