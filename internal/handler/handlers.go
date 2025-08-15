@@ -31,26 +31,26 @@ var Events = []model.Event{
 	},
 	{
 		Commands: []string{"近期比赛"},
-		Handler:  FetchContest,
+		Handler:  ContestHandler,
 	},
 	{
 		Commands: []string{"近期nowcoder", "近期nc", "近期牛客"},
-		Handler:  FetchNowcoderContest,
+		Handler:  NowcoderContestHandler,
 	},
 	{
 		Commands: []string{"近期cf"},
-		Handler:  FetchCodeforcesContest,
+		Handler:  CodeforcesContestHandler,
 	},
 	{
 		Commands: []string{"近期luogu", "近期lg"},
-		Handler:  FetchLuoguContest,
+		Handler:  LuoguContestHandler,
 	},
 	{
 		Commands: []string{"近期leetcode", "近期lc"},
-		Handler:  FetchLeetcodeContest,
+		Handler:  LeetcodeContestHandler,
 	},
 	{
 		Commands: []string{"近期atc", "近期atcoder"},
-		Handler:  FetchAtcoderContest,
+		Handler:  AtcoderContestHandler,
 	},
 }

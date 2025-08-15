@@ -2,65 +2,90 @@ package handler
 
 import (
 	"fmt"
-	"sort"
 
-	"github.com/suzmii/ACMBot/internal/api/client"
 	"github.com/suzmii/ACMBot/internal/datasync"
 	"github.com/suzmii/ACMBot/internal/model"
 )
 
-func FetchContest(c *model.Context) error {
+func ContestHandler(c *model.Context) error {
 	contestList, err := datasync.GetRaces(c.Ctx)
 	if err != nil {
 		return err
 	}
-	sort.Slice(contestList, func(i, j int) bool {
-		return contestList[i].StartTime.Before(contestList[j].StartTime)
-	})
 	c.Messager.Send(model.TextMessage{Text: fmt.Sprintf("近期比赛: %v", contestList)})
 	return nil
 }
 
-func FetchNowcoderContest(c *model.Context) error {
-	contestList, err := client.FetchClistNowcoderContests()
+func NowcoderContestHandler(c *model.Context) error {
+	list, err := datasync.GetRaces(c.Ctx)
 	if err != nil {
 		return err
+	}
+	var contestList []model.Race
+	for _, r := range list {
+		if r.Source == model.ResourceNowcoder {
+			contestList = append(contestList, r)
+		}
 	}
 	c.Messager.Send(model.TextMessage{Text: fmt.Sprintf("近期比赛: %v", contestList)})
 	return nil
 }
 
-func FetchLuoguContest(c *model.Context) error {
-	contestList, err := client.FetchClistLuoguContests()
+func LuoguContestHandler(c *model.Context) error {
+	list, err := datasync.GetRaces(c.Ctx)
 	if err != nil {
 		return err
+	}
+	var contestList []model.Race
+	for _, r := range list {
+		if r.Source == model.ResourceLuogu {
+			contestList = append(contestList, r)
+		}
 	}
 	c.Messager.Send(model.TextMessage{Text: fmt.Sprintf("近期比赛: %v", contestList)})
 	return nil
 }
 
-func FetchLeetcodeContest(c *model.Context) error {
-	contestList, err := client.FetchClistLeetcodeContests()
+func LeetcodeContestHandler(c *model.Context) error {
+	list, err := datasync.GetRaces(c.Ctx)
 	if err != nil {
 		return err
+	}
+	var contestList []model.Race
+	for _, r := range list {
+		if r.Source == model.ResourceLeetcode {
+			contestList = append(contestList, r)
+		}
 	}
 	c.Messager.Send(model.TextMessage{Text: fmt.Sprintf("近期比赛: %v", contestList)})
 	return nil
 }
 
-func FetchAtcoderContest(c *model.Context) error {
-	contestList, err := client.FetchClistAtcoderContests()
+func AtcoderContestHandler(c *model.Context) error {
+	list, err := datasync.GetRaces(c.Ctx)
 	if err != nil {
 		return err
+	}
+	var contestList []model.Race
+	for _, r := range list {
+		if r.Source == model.ResourceAtcoder {
+			contestList = append(contestList, r)
+		}
 	}
 	c.Messager.Send(model.TextMessage{Text: fmt.Sprintf("近期比赛: %v", contestList)})
 	return nil
 }
 
-func FetchCodeforcesContest(c *model.Context) error {
-	contestList, err := client.FetchClistCodeforcesContests()
+func CodeforcesContestHandler(c *model.Context) error {
+	list, err := datasync.GetRaces(c.Ctx)
 	if err != nil {
 		return err
+	}
+	var contestList []model.Race
+	for _, r := range list {
+		if r.Source == model.ResourceCodeforces {
+			contestList = append(contestList, r)
+		}
 	}
 	c.Messager.Send(model.TextMessage{Text: fmt.Sprintf("近期比赛: %v", contestList)})
 	return nil
