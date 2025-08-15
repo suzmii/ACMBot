@@ -1,14 +1,16 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/sirupsen/logrus"
+	"github.com/suzmii/ACMBot/config"
 	"github.com/suzmii/ACMBot/internal/database/repo"
 	"github.com/suzmii/ACMBot/internal/datasync"
 	"github.com/suzmii/ACMBot/internal/model"
 	"github.com/suzmii/ACMBot/internal/render"
 	"github.com/suzmii/ACMBot/internal/render/rendermodel"
 	"github.com/suzmii/ACMBot/internal/util/param"
-	"time"
 )
 
 func RatingDetailHandler(c *model.Context) error {
@@ -30,7 +32,11 @@ func RatingDetailHandler(c *model.Context) error {
 	var records model.RatingRecords
 	logrus.Debug(ratingRecords)
 
-	if ratingRecords != nil && time.Since(ratingRecords.UpdatedAt) < 4*time.Hour {
+	ratingTTL := config.LoadConfig().Sync.CodeforcesRatingRefreshHours
+	if ratingTTL <= 0 {
+		ratingTTL = 4
+	}
+	if ratingRecords != nil && time.Since(ratingRecords.UpdatedAt) < time.Duration(ratingTTL)*time.Hour {
 		records = model.RatingRecordsFromRepo(*ratingRecords)
 	} else {
 		records, err = datasync.RatingRecords(c.Ctx, user)
@@ -63,14 +69,22 @@ func ProfileHandler(c *model.Context) error {
 		return err
 	}
 
-	if time.Since(user.UpdatedAt) > 4*time.Hour {
+	userTTL := config.LoadConfig().Sync.CodeforcesUserRefreshHours
+	if userTTL <= 0 {
+		userTTL = 4
+	}
+	if time.Since(user.UpdatedAt) > time.Duration(userTTL)*time.Hour {
 		user, err = datasync.User(c.Ctx, username)
 		if err != nil {
 			return err
 		}
 	}
 
-	if time.Since(user.SubmissionUpdatedAt) > 24*time.Hour {
+	subTTL := config.LoadConfig().Sync.CodeforcesSubmissionRefreshHours
+	if subTTL <= 0 {
+		subTTL = 24
+	}
+	if time.Since(user.SubmissionUpdatedAt) > time.Duration(subTTL)*time.Hour {
 		err = datasync.Submissions(c.Ctx, user)
 		if err != nil {
 			return err

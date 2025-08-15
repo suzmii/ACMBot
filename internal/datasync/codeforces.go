@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"github.com/suzmii/ACMBot/internal/api/client"
 	"github.com/suzmii/ACMBot/internal/database/dbmodel"
@@ -11,7 +13,6 @@ import (
 	"github.com/suzmii/ACMBot/internal/errs"
 	"github.com/suzmii/ACMBot/internal/model"
 	"gorm.io/gorm"
-	"time"
 )
 
 // GetOrSyncUser 获取用户，如果是新用户则同步并创建用户
@@ -132,6 +133,12 @@ func Submissions(ctx context.Context, user model.User) error {
 
 	err = repo.UpdateSubmissions(ctx, user.ID, repoSubmissions)
 	if err != nil {
+		return err
+	}
+	// update user's submission updated time
+	repoUser := user.ToRepo()
+	repoUser.SubmissionUpdatedAt = time.Now()
+	if err := repo.SaveUser(ctx, &repoUser); err != nil {
 		return err
 	}
 	logrus.Debugf("synced and saved submissions: %+v", repoSubmissions)
