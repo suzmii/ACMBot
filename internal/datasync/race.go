@@ -2,7 +2,6 @@ package datasync
 
 import (
 	"context"
-	"sort"
 	"time"
 
 	"github.com/suzmii/ACMBot/config"
@@ -12,11 +11,12 @@ import (
 	"github.com/suzmii/ACMBot/internal/model"
 )
 
-func GetRaces(ctx context.Context) ([]model.Race, error) {
+// SyncRacesFromRemoteIfStale refreshes races from remote and updates DB if needed
+func SyncRacesFromRemoteIfStale(ctx context.Context) error {
 	// Determine last synced time by the latest race update time in DB
 	lastSynced, err := repo.GetLatestRaceUpdatedAt(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// If never synced or older than configured hours, refresh from remote and update DB
@@ -31,31 +31,31 @@ func GetRaces(ctx context.Context) ([]model.Race, error) {
 		if list, err := client.FetchClistCodeforcesContests(); err == nil {
 			fetched = append(fetched, list...)
 		} else {
-			return nil, err
+			return err
 		}
 		// Atcoder
 		if list, err := client.FetchClistAtcoderContests(); err == nil {
 			fetched = append(fetched, list...)
 		} else {
-			return nil, err
+			return err
 		}
 		// Leetcode
 		if list, err := client.FetchClistLeetcodeContests(); err == nil {
 			fetched = append(fetched, list...)
 		} else {
-			return nil, err
+			return err
 		}
 		// Luogu
 		if list, err := client.FetchClistLuoguContests(); err == nil {
 			fetched = append(fetched, list...)
 		} else {
-			return nil, err
+			return err
 		}
 		// Nowcoder
 		if list, err := client.FetchClistNowcoderContests(); err == nil {
 			fetched = append(fetched, list...)
 		} else {
-			return nil, err
+			return err
 		}
 
 		// Delete finished races after keep hours
@@ -64,7 +64,7 @@ func GetRaces(ctx context.Context) ([]model.Race, error) {
 			keepHours = 24
 		}
 		if err := repo.DeleteFinishedRaces(ctx, time.Now(), keepHours); err != nil {
-			return nil, err
+			return err
 		}
 
 		// Convert to db models and replace
@@ -79,28 +79,11 @@ func GetRaces(ctx context.Context) ([]model.Race, error) {
 			})
 		}
 		if err := repo.ReplaceRaces(ctx, dbRaces); err != nil {
-			return nil, err
+			return err
 		}
 	}
 
-	// Read from DB and return
-	stored, err := repo.GetAllRaces(ctx)
-	if err != nil {
-		return nil, err
-	}
-	result := make([]model.Race, 0, len(stored))
-	for _, r := range stored {
-		result = append(result, model.Race{
-			Source:    convertToModelResource(r.Resource),
-			Name:      r.Title,
-			Link:      r.Link,
-			StartTime: r.StartAt,
-			EndTime:   r.EndAt,
-		})
-	}
-
-	sort.Slice(result, func(i, j int) bool { return result[i].StartTime.Before(result[j].StartTime) })
-	return result, nil
+	return nil
 }
 
 func convertToDBResource(res model.Resource) dbmodel.Resource {
@@ -117,22 +100,5 @@ func convertToDBResource(res model.Resource) dbmodel.Resource {
 		return dbmodel.ResourceNowcoder
 	default:
 		return dbmodel.ResourceCodeforces
-	}
-}
-
-func convertToModelResource(res dbmodel.Resource) model.Resource {
-	switch res {
-	case dbmodel.ResourceCodeforces:
-		return model.ResourceCodeforces
-	case dbmodel.ResourceAtcoder:
-		return model.ResourceAtcoder
-	case dbmodel.ResourceLeetcode:
-		return model.ResourceLeetcode
-	case dbmodel.ResourceLuogu:
-		return model.ResourceLuogu
-	case dbmodel.ResourceNowcoder:
-		return model.ResourceNowcoder
-	default:
-		return model.ResourceCodeforces
 	}
 }

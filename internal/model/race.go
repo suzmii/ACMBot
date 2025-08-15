@@ -2,8 +2,10 @@ package model
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
+	"github.com/suzmii/ACMBot/internal/database/dbmodel"
 	"github.com/suzmii/ACMBot/internal/util"
 )
 
@@ -37,6 +39,56 @@ type Race struct {
 	Link      string    `json:"link"`
 	StartTime time.Time `json:"start_time"`
 	EndTime   time.Time `json:"end_time"`
+}
+
+type Races []Race
+
+func (rs Races) String() string {
+	var b strings.Builder
+	for _, r := range rs {
+		b.WriteString(r.String())
+		b.WriteString("\n\n")
+	}
+	return b.String()
+}
+
+// Conversions between DB models and common models
+func ModelResourceFromDB(res dbmodel.Resource) Resource {
+	switch res {
+	case dbmodel.ResourceCodeforces:
+		return ResourceCodeforces
+	case dbmodel.ResourceAtcoder:
+		return ResourceAtcoder
+	case dbmodel.ResourceLeetcode:
+		return ResourceLeetcode
+	case dbmodel.ResourceLuogu:
+		return ResourceLuogu
+	case dbmodel.ResourceNowcoder:
+		return ResourceNowcoder
+	default:
+		return ResourceCodeforces
+	}
+}
+
+func RaceFromRepo(r dbmodel.Races) Race {
+	return Race{
+		Source:    ModelResourceFromDB(r.Resource),
+		Name:      r.Title,
+		Link:      r.Link,
+		StartTime: r.StartAt,
+		EndTime:   r.EndAt,
+	}
+}
+
+func RacesFromRepo(list []*dbmodel.Races) []Race {
+	result := make([]Race, 0, len(list))
+	for _, r := range list {
+		if r == nil {
+			continue
+		}
+		result = append(result, RaceFromRepo(*r))
+	}
+	return result
 }
 
 func (r *Race) String() string {

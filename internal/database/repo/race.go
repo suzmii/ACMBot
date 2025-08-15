@@ -10,8 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// GetAllRaces returns all races ordered by start time ascending.
-func GetAllRaces(ctx context.Context) ([]*dbmodel.Races, error) {
+// GetRaces returns all races ordered by start time ascending.
+func GetRaces(ctx context.Context) ([]*dbmodel.Races, error) {
 	races, err := gen.Q.WithContext(ctx).
 		Races.
 		Order(gen.Races.StartAt).
