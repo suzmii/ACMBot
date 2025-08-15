@@ -106,7 +106,7 @@ func Submissions(ctx context.Context, user model.User) error {
 	after := time.Time{}
 
 	if submission != nil {
-		logrus.Debug("got submission: %v", submission)
+		logrus.Debugf("got submission: %+v", submission)
 		after = submission.CreatedAt
 	}
 
@@ -133,6 +133,12 @@ func Submissions(ctx context.Context, user model.User) error {
 
 	err = repo.UpdateSubmissions(ctx, user.ID, repoSubmissions)
 	if err != nil {
+		return err
+	}
+	// update user's submission updated time
+	repoUser := user.ToRepo()
+	repoUser.SubmissionUpdatedAt = time.Now()
+	if err := repo.SaveUser(ctx, &repoUser); err != nil {
 		return err
 	}
 	logrus.Debugf("synced and saved submissions: %+v", repoSubmissions)

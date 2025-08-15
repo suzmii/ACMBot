@@ -21,6 +21,7 @@ var (
 	CodeforcesSubmission        *codeforcesSubmission
 	CodeforcesUser              *codeforcesUser
 	CodeforcesUserPassedProblem *codeforcesUserPassedProblem
+	Races                       *races
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
@@ -29,6 +30,7 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	CodeforcesSubmission = &Q.CodeforcesSubmission
 	CodeforcesUser = &Q.CodeforcesUser
 	CodeforcesUserPassedProblem = &Q.CodeforcesUserPassedProblem
+	Races = &Q.Races
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
@@ -38,6 +40,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		CodeforcesSubmission:        newCodeforcesSubmission(db, opts...),
 		CodeforcesUser:              newCodeforcesUser(db, opts...),
 		CodeforcesUserPassedProblem: newCodeforcesUserPassedProblem(db, opts...),
+		Races:                       newRaces(db, opts...),
 	}
 }
 
@@ -48,6 +51,7 @@ type Query struct {
 	CodeforcesSubmission        codeforcesSubmission
 	CodeforcesUser              codeforcesUser
 	CodeforcesUserPassedProblem codeforcesUserPassedProblem
+	Races                       races
 }
 
 func (q *Query) Available() bool { return q.db != nil }
@@ -59,6 +63,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		CodeforcesSubmission:        q.CodeforcesSubmission.clone(db),
 		CodeforcesUser:              q.CodeforcesUser.clone(db),
 		CodeforcesUserPassedProblem: q.CodeforcesUserPassedProblem.clone(db),
+		Races:                       q.Races.clone(db),
 	}
 }
 
@@ -77,6 +82,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		CodeforcesSubmission:        q.CodeforcesSubmission.replaceDB(db),
 		CodeforcesUser:              q.CodeforcesUser.replaceDB(db),
 		CodeforcesUserPassedProblem: q.CodeforcesUserPassedProblem.replaceDB(db),
+		Races:                       q.Races.replaceDB(db),
 	}
 }
 
@@ -85,6 +91,7 @@ type queryCtx struct {
 	CodeforcesSubmission        *codeforcesSubmissionDo
 	CodeforcesUser              *codeforcesUserDo
 	CodeforcesUserPassedProblem *codeforcesUserPassedProblemDo
+	Races                       *racesDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
@@ -93,6 +100,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		CodeforcesSubmission:        q.CodeforcesSubmission.WithContext(ctx),
 		CodeforcesUser:              q.CodeforcesUser.WithContext(ctx),
 		CodeforcesUserPassedProblem: q.CodeforcesUserPassedProblem.WithContext(ctx),
+		Races:                       q.Races.WithContext(ctx),
 	}
 }
 
