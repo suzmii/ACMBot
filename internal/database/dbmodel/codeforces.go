@@ -1,8 +1,9 @@
 package dbmodel
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type CodeforcesSubmissionStatus string
@@ -30,7 +31,7 @@ const (
 type CodeforcesUser struct {
 	gorm.Model
 
-	Username     string `gorm:"uniqueIndex"`
+	Username     string `gorm:"size:191;uniqueIndex"`
 	AvatarURL    string
 	Organization string
 	FriendOf     int
@@ -46,7 +47,7 @@ type CodeforcesSubmission struct {
 	// createdAt 替换为实际提交时间
 	UserID        uint   `gorm:"index:idx_user_pass_problem,priority:1"`
 	Pass          bool   `gorm:"index:idx_user_pass_problem,priority:2"`
-	ProblemID     string `gorm:"index:idx_user_pass_problem,priority:3"`
+	ProblemID     string `gorm:"size:191;index:idx_user_pass_problem,priority:3"`
 	ProblemRating int
 
 	Language string
@@ -56,7 +57,7 @@ type CodeforcesSubmission struct {
 type CodeforcesUserPassedProblem struct {
 	gorm.Model
 	UserID        uint   `gorm:"uniqueIndex:idx_user_problem,priority:1;index:idx_user_problem_rating,priority:1"`
-	ProblemID     string `gorm:"uniqueIndex:idx_user_problem,priority:2"`
+	ProblemID     string `gorm:"size:191;uniqueIndex:idx_user_problem,priority:2"`
 	ProblemRating int    `gorm:"index:idx_user_problem_rating,priority:2"`
 }
 
