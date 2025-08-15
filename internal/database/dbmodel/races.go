@@ -1,8 +1,9 @@
 package dbmodel
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Resource int
@@ -20,7 +21,7 @@ type Races struct {
 
 	Resource Resource
 	Title    string
-	StartAt  time.Time
-	EndAt    time.Time
+	StartAt  time.Time `gorm:"index:idx_races_start_at"`
+	EndAt    time.Time `gorm:"index:idx_races_end_at"`
 	Link     string
 }
