@@ -79,4 +79,5 @@ var CodeforcesModels = []interface{}{
 	new(CodeforcesSubmission),
 	new(CodeforcesUserPassedProblem),
 	new(CodeforcesRatingRecords),
+	new(Races),
 }

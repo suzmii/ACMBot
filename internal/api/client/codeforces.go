@@ -104,7 +104,7 @@ func fetchCodeforcesAPI[T any](apiMethod string, args map[string]any) (T, error)
 		return util.Zero[T](), err
 	}
 	if res.Status != "OK" {
-		return util.Zero[T](), fmt.Errorf(res.Comment)
+		return util.Zero[T](), fmt.Errorf("%s", res.Comment)
 	}
 
 	return res.Result, nil
