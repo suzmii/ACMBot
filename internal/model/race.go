@@ -34,6 +34,7 @@ func (r Resource) Name() string {
 var AllRaceResource = []Resource{ResourceCodeforces, ResourceLuogu, ResourceAtcoder, ResourceLeetcode, ResourceNowcoder}
 
 type Race struct {
+	ID        string    `json:"id"`
 	Source    Resource  `json:"source"`
 	Name      string    `json:"name"`
 	Link      string    `json:"link"`
@@ -72,6 +73,7 @@ func ModelResourceFromDB(res dbmodel.Resource) Resource {
 
 func RaceFromRepo(r dbmodel.Races) Race {
 	return Race{
+		ID:        r.ID,
 		Source:    ModelResourceFromDB(r.Resource),
 		Name:      r.Title,
 		Link:      r.Link,

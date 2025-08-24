@@ -26,7 +26,7 @@ func newRaces(db *gorm.DB, opts ...gen.DOOption) races {
 
 	tableName := _races.racesDo.TableName()
 	_races.ALL = field.NewAsterisk(tableName)
-	_races.ID = field.NewUint(tableName, "id")
+	_races.ID = field.NewString(tableName, "id")
 	_races.CreatedAt = field.NewTime(tableName, "created_at")
 	_races.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_races.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -45,7 +45,7 @@ type races struct {
 	racesDo
 
 	ALL       field.Asterisk
-	ID        field.Uint
+	ID        field.String
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
@@ -70,7 +70,7 @@ func (r races) As(alias string) *races {
 
 func (r *races) updateTableName(table string) *races {
 	r.ALL = field.NewAsterisk(table)
-	r.ID = field.NewUint(table, "id")
+	r.ID = field.NewString(table, "id")
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.UpdatedAt = field.NewTime(table, "updated_at")
 	r.DeletedAt = field.NewField(table, "deleted_at")

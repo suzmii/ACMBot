@@ -70,13 +70,15 @@ func SyncRacesFromRemoteIfStale(ctx context.Context) error {
 		// Convert to db models and replace
 		dbRaces := make([]*dbmodel.Races, 0, len(fetched))
 		for _, r := range fetched {
-			dbRaces = append(dbRaces, &dbmodel.Races{
+			dbRace := &dbmodel.Races{
 				Resource: convertToDBResource(r.Source),
 				Title:    r.Name,
 				StartAt:  r.StartTime,
 				EndAt:    r.EndTime,
 				Link:     r.Link,
-			})
+			}
+			dbRace.ID = dbRace.GenerateID()
+			dbRaces = append(dbRaces, dbRace)
 		}
 		if err := repo.ReplaceRaces(ctx, dbRaces); err != nil {
 			return err
