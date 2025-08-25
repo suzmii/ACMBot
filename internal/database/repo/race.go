@@ -55,20 +55,27 @@ func DeleteFinishedRaces(ctx context.Context, now time.Time, keepHours int) erro
 
 // ReplaceRaces replaces all races with the provided list (soft-deleting existing entries then inserting new ones).
 func ReplaceRaces(ctx context.Context, newRaces []*dbmodel.Races) error {
-	return gen.Q.Transaction(func(tx *gen.Query) error {
-		// delete all existing races first
-		existing, err := tx.Races.WithContext(ctx).Find()
-		if err != nil {
-			return err
+	races, err := GetRaces(ctx)
+	if err != nil {
+		return err
+	}
+	ids := make(map[string]bool)
+	newIds := make(map[string]bool)
+	for _, race := range races {
+		ids[race.ID] = true
+	}
+	for _, race := range newRaces {
+		newIds[race.ID] = true
+	}
+	for _, race := range newRaces {
+		if ids[race.ID] == false {
+			gen.Q.WithContext(ctx).Races.Create(race)
 		}
-		if len(existing) > 0 {
-			if _, err := tx.Races.WithContext(ctx).Delete(existing...); err != nil {
-				return err
-			}
+	}
+	for _, race := range races {
+		if newIds[race.ID] == false {
+			gen.Q.WithContext(ctx).Races.Delete(race)
 		}
-		if len(newRaces) == 0 {
-			return nil
-		}
-		return tx.Races.WithContext(ctx).CreateInBatches(newRaces, 500)
-	})
+	}
+	return nil
 }
