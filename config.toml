@@ -1,0 +1,26 @@
+[api]
+CodeforcesKey = ''
+CodeforcesSecret = ''
+ClistAuthenticated = ''
+
+[database]
+Host = 'localhost'
+Port = 3306
+Username = 'root'
+Password = 'password'
+Name = 'ACMBot'
+AutoCreateDB = false
+AutoMigrate = true
+
+[logger]
+AlterToken = ''
+Level = 'info'
+
+[sync]
+RaceRefreshHours = 24
+
+[zerobot]
+CommandPrefix = '/'
+Host = 'localhost'
+Port = 15630
+Token = ''

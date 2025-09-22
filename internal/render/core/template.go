@@ -31,8 +31,6 @@ var (
 	TemplateContentAtcoderProfile string
 	//go:embed templates/qq_group_rank.gohtml
 	TemplateContentQQGroupRank string
-	//go:embed templates/race_calendar.gohtml
-	TemplateContentRaceCalendar string
 )
 
 var templateContents = map[Template]*string{
@@ -41,7 +39,6 @@ var templateContents = map[Template]*string{
 	TemplateCodeforcesRatingRecords: &TemplateContentCodeforcesRatingRecords,
 	TemplateAtcoderProfile:          &TemplateContentAtcoderProfile,
 	TemplateQQGroupRank:             &TemplateContentQQGroupRank,
-	TemplateRaceCalendar:            &TemplateContentRaceCalendar,
 }
 
 // GetTemplate returns a compiled template by name.
