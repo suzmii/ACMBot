@@ -1,13 +1,13 @@
 package subconfig
 
 type Database struct {
-	Host         string `mapstructure:"host"`
-	Port         int    `mapstructure:"port"`
-	Username     string `mapstructure:"username"`
-	Password     string `mapstructure:"password"`
-	Name         string `mapstructure:"name"`
-	AutoCreateDB bool   `mapstructure:"auto_create_db"`
-	AutoMigrate  bool   `mapstructure:"auto_migrate"`
+	Host         string `mapstructure:"host"           toml:"host"`
+	Port         int    `mapstructure:"port"           toml:"port"`
+	Username     string `mapstructure:"username"       toml:"username"`
+	Password     string `mapstructure:"password"       toml:"password"`
+	Name         string `mapstructure:"name"           toml:"name"`
+	AutoCreateDB bool   `mapstructure:"auto_create_db" toml:"auto_create_db"`
+	AutoMigrate  bool   `mapstructure:"auto_migrate"   toml:"auto_migrate"`
 }
 
 var DefaultDB = Database{
