@@ -109,7 +109,7 @@ func New(cfg subconfig.Render) (*Render, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create playwright context")
 	}
-	r.pool = NewPagePool(playctx, 8)
+	r.pool = NewPagePool(playctx, cfg.PoolSize)
 
 	// InitTemplates
 	logger.Info("Initializing templates")
