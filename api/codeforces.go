@@ -106,9 +106,10 @@ func fetchCodeforcesAPI[T any](apiMethod string, args map[string]any, cfg *subco
 		return util.Zero[T](), fmt.Errorf("failed to read response body while call codeforces api: %w; usererr: %w", err, usererr.ErrCodeforcesAPIFailure)
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return util.Zero[T](), fmt.Errorf("codeforces return bad status code: %s; usererr: %w", resp.Status, usererr.ErrCodeforcesAPIFailure)
-	}
+	// status code 不为 200 时, 也会正常返回 body, 故无需处理该情况
+	// if resp.StatusCode != http.StatusOK {
+	// 	return util.Zero[T](), fmt.Errorf("codeforces return bad status code: %s; usererr: %w", resp.Status, usererr.ErrCodeforcesAPIFailure)
+	// }
 
 	var res CodeforcesResponse[T]
 	if err := json.Unmarshal(body, &res); err != nil {
