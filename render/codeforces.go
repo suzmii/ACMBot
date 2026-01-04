@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"html/template"
+	"time"
 
 	"github.com/suzmii/ACMBot/render/internal"
 	"github.com/suzmii/ACMBot/util/logx"
@@ -88,15 +89,9 @@ type CodeforcesUserProfile struct {
 // executeTemplate 是通用的模板渲染函数
 // templateName: 模板名称
 // data: 模板数据
-// setupFunc: 数据设置函数，用于在渲染前设置数据（如注入资源）
-func (r *Render) executeTemplate(ctx context.Context, templateName internal.Template, data interface{}, setupFunc func(interface{})) ([]byte, error) {
+func (r *Render) executeTemplate(ctx context.Context, templateName internal.Template, data interface{}) ([]byte, error) {
 	defer logx.TraceWall(logger, "executeTemplate")
 	var buffer bytes.Buffer
-
-	// 应用数据设置函数
-	if setupFunc != nil {
-		setupFunc(data)
-	}
 
 	if err := r.GetTemplate(templateName).Execute(&buffer, data); err != nil {
 		return nil, fmt.Errorf("failed to execute template %s: %w", templateName, err)
@@ -110,11 +105,10 @@ func (r *Render) RatingDetail(ctx context.Context, records CodeforcesRatingRecor
 	return r.executeTemplate(
 		ctx,
 		internal.TemplateCodeforcesRatingRecords,
-		&records,
-		func(data interface{}) {
-			if d, ok := data.(*CodeforcesRatingRecords); ok {
-				d.EchartsJS = internal.ResourceEcharts
-			}
+		&CodeforcesRatingRecords{
+			Data:      records.Data,
+			Handle:    records.Handle,
+			EchartsJS: internal.ResourceEcharts,
 		},
 	)
 }
@@ -125,12 +119,47 @@ func (r *Render) ProfileV2(ctx context.Context, user CodeforcesUserProfile) ([]b
 	return r.executeTemplate(
 		ctx,
 		internal.TemplateCodeforcesProfileV2,
-		&user,
-		func(data interface{}) {
-			if d, ok := data.(*CodeforcesUserProfile); ok {
-				d.TailwindJS = internal.ResourceTailwind
-				d.FontCSS = internal.ResourceZsft184
-			}
+		&CodeforcesUserProfile{
+			Avatar:     user.Avatar,
+			Handle:     user.Handle,
+			MaxRating:  user.MaxRating,
+			FriendOf:   user.FriendOf,
+			Rating:     user.Rating,
+			Level:      user.Level,
+			Solved:     user.Solved,
+			SolvedData: user.SolvedData,
+			TailwindJS: internal.ResourceTailwind,
+			FontCSS:    internal.ResourceZsft184,
+		},
+	)
+}
+
+type RankUser struct {
+	Rank   int
+	Handle string
+	Avatar string
+	Rating int
+	Level  string
+}
+
+type RankUsers struct {
+	Users      []RankUser
+	Time       time.Time
+	TailwindJS template.JS
+	FontCSS    template.CSS
+}
+
+func (r *Render) Rank(ctx context.Context, users []RankUser) ([]byte, error) {
+	defer logx.TraceWall(logger, "Rank")()
+	logger.Trace("rendering codeforces Rank ", users)
+	return r.executeTemplate(
+		ctx,
+		internal.TemplattCodeforcesRank,
+		&RankUsers{
+			Time:       time.Now(),
+			Users:      users,
+			TailwindJS: internal.ResourceTailwind,
+			FontCSS:    internal.ResourceZsft184,
 		},
 	)
 }

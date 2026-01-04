@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        {{ .TailwindJS }}
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        custom: ['"ZSFT-ENMIN-184"'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        {{ .FontCSS }}
+    </style>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 18.75rem;
+            overflow: hidden;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.3) 0%, transparent 40%),
+                        radial-gradient(circle at 20% 80%, rgba(147, 197, 253, 0.3) 0%, transparent 40%);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(30px, -30px) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div id="background" class="gradient-bg flex h-auto min-h-[25rem] w-[18.75rem] flex-col text-white font-custom font-semibold">
+    <!-- 标题区域 -->
+    <div class="flex items-center justify-center py-3 text-xl font-bold">
+        Rating 排行榜
+    </div>
+
+    <!-- 排行榜列表 -->
+    <div id="rankList" class="relative z-10 mx-2 flex flex-1 flex-col gap-1 overflow-hidden">
+        {{range .Users}}
+        <div class="rank-item relative flex items-center rounded-lg px-2 py-1.5 shadow-sm backdrop-blur-sm" data-level="{{.Level}}" data-rank="{{.Rank}}">
+            <!-- 排名 -->
+            <div class="rank-badge mr-2 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">
+                #{{.Rank}}
+            </div>
+
+            <!-- 头像 -->
+            <img src="{{.Avatar}}" class="mr-2 h-6 w-6 rounded-full object-cover" />
+
+            <!-- 用户名 -->
+            <div class="flex-1 truncate text-xs">
+                {{.Handle}}
+            </div>
+
+            <!-- Rating -->
+            <div class="rating-value text-sm font-bold">
+                {{.Rating}}
+            </div>
+        </div>
+        {{end}}
+    </div>
+
+    <!-- 底部时间 -->
+    <div id="time" class="relative z-10 py-2 text-center text-xs text-white/80">
+        {{.Time}}
+    </div>
+</div>
+
+<script>
+    (
+        ()=>{
+            window.ColorTheme = class {
+                constructor(bg, badge, text) {
+                    this.background = bg;
+                    this.badge = badge;
+                    this.text = text;
+                }
+            };
+
+            window.colorMap = {
+                "Newbie":     new ColorTheme("gray-500", "gray-400", "gray-200"),
+                "Pupil":      new ColorTheme("lime-600", "lime-400", "lime-100"),
+                "Specialist": new ColorTheme("cyan-600", "cyan-400", "cyan-100"),
+                "Expert":     new ColorTheme("blue-600", "blue-400", "blue-100"),
+                "CM":         new ColorTheme("indigo-600", "indigo-400", "indigo-100"),
+                "Master":     new ColorTheme("[#EF6C00]", "[#FF9800]", "[#FFE0B2]"),
+                "IM":         new ColorTheme("[#EF6C00]", "[#FF9800]", "[#FFE0B2]"),
+                "GM":         new ColorTheme("rose-600", "rose-400", "rose-100"),
+                "IGM":        new ColorTheme("red-600", "red-400", "red-100"),
+                "LGM":        new ColorTheme("red-600", "red-400", "red-100"),
+                "Tourist":    new ColorTheme("red-600", "red-400", "red-100"),
+            };
+
+            window.rankColors = {
+                1: { badge: "bg-yellow-400", text: "text-yellow-900" },
+                2: { badge: "bg-gray-300", text: "text-gray-800" },
+                3: { badge: "bg-amber-600", text: "text-amber-100" }
+            };
+        }
+    )()
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 处理每个用户条目
+        document.querySelectorAll('.rank-item').forEach(item => {
+            const level = item.dataset.level;
+            const rank = parseInt(item.dataset.rank);
+            const colorTheme = colorMap[level];
+
+            // 设置半透明背景色
+            item.style.backgroundColor = getComputedStyle(document.documentElement)
+                .getPropertyValue('--' + colorTheme.background + '-bg') ||
+                colorTheme.background.replace('gray-500', 'rgba(107, 114, 128, 0.6)')
+                .replace('lime-600', 'rgba(22, 163, 74, 0.6)')
+                .replace('cyan-600', 'rgba(8, 145, 178, 0.6)')
+                .replace('blue-600', 'rgba(37, 99, 235, 0.6)')
+                .replace('indigo-600', 'rgba(79, 70, 229, 0.6)')
+                .replace('[#EF6C00]', 'rgba(239, 108, 0, 0.6)')
+                .replace('rose-600', 'rgba(225, 29, 72, 0.6)')
+                .replace('red-600', 'rgba(220, 38, 38, 0.6)');
+
+            // 设置排名徽章颜色
+            const badge = item.querySelector('.rank-badge');
+            if (rankColors[rank]) {
+                badge.classList.add(rankColors[rank].badge, rankColors[rank].text);
+            } else {
+                badge.classList.add('bg-gray-600', 'text-gray-200');
+            }
+
+            // 设置 Rating 文字颜色
+            const ratingValue = item.querySelector('.rating-value');
+            ratingValue.classList.add('text-' + colorTheme.text);
+        });
+
+        // 更新时间
+        const timeElement = document.getElementById("time");
+        const now = new Date();
+        timeElement.textContent = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    });
+</script>
+</body>
+</html>

@@ -20,8 +20,8 @@ func (t Template) String() string {
 		return "TemplateCodeforcesRatingRecords"
 	case TemplateAtcoderProfile:
 		return "TemplateAtcoderProfile"
-	case TemplateQQGroupRank:
-		return "TemplateQQGroupRank"
+	case TemplattCodeforcesRank:
+		return "TemplattCodeforcesRank"
 	case TemplateRaceCalendar:
 		return "TemplateRaceCalendar"
 	default:
@@ -34,7 +34,7 @@ const (
 	TemplateCodeforcesProfileV2
 	TemplateCodeforcesRatingRecords
 	TemplateAtcoderProfile
-	TemplateQQGroupRank
+	TemplattCodeforcesRank
 	TemplateRaceCalendar
 )
 
@@ -47,8 +47,8 @@ var (
 	TemplateContentCodeforcesRatingRecords string
 	//go:embed templates/atcoder_profile.gohtml
 	TemplateContentAtcoderProfile string
-	//go:embed templates/qq_group_rank.gohtml
-	TemplateContentQQGroupRank string
+	//go:embed templates/codeforces_rating_rank.gohtml
+	TemplateContentCodeforcesRank string
 )
 
 var templateContents = map[Template]*string{
@@ -56,7 +56,7 @@ var templateContents = map[Template]*string{
 	TemplateCodeforcesProfileV2:     &TemplateContentCodeforcesProfileV2,
 	TemplateCodeforcesRatingRecords: &TemplateContentCodeforcesRatingRecords,
 	TemplateAtcoderProfile:          &TemplateContentAtcoderProfile,
-	TemplateQQGroupRank:             &TemplateContentQQGroupRank,
+	TemplattCodeforcesRank:          &TemplateContentCodeforcesRank,
 }
 
 // GetTemplate returns a compiled template by name.
