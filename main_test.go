@@ -55,7 +55,7 @@ func TestGetRacesFromDB(t *testing.T) {
 		consts.RaceResourceNowcoder,
 	} {
 		t.Log(i)
-		races, err := handler.GetRace(t.Context(), i)
+		races, err := handler.GetUpcomingRace(t.Context(), i)
 		require.NoError(t, err)
 		spew.Dump(races)
 	}

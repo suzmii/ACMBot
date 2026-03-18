@@ -44,14 +44,14 @@ func (h *Handler) getAndInitUser(ctx context.Context, username string) (*databas
 
 	user, err := h.store.GetCodeforcesUser(ctx, username)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			user, err = h.initCodeforcesUser(ctx, username)
-			if err != nil {
-				return nil, err
-			}
-		} else {
+		if !errors.Is(err, pgx.ErrNoRows) {
 			return nil, fmt.Errorf("failed to get user from database: %w", err)
 		}
+		user, err = h.initCodeforcesUser(ctx, username)
+		if err != nil {
+			return nil, err
+		}
+		return user, nil
 	}
 	return user, err
 }
@@ -168,18 +168,38 @@ func calculateCodeforcesSolvedData(acProblems []database.CodeforcesProblemForQue
 // 输出: []byte - 图片数据, error - 错误信息
 func (h *Handler) GetCodeforcesUserProfileImage(ctx context.Context, username string) ([]byte, error) {
 	defer logx.TraceWall(logger, "GetCodeforcesUserProfileImage")()
+	logger.Tracef("GetCodeforcesUserProfileImage: username=%s", username)
+
 	user, err := h.getAndInitUser(ctx, username)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
-	// 检查更新submission
-	if time.Since(user.SubmissionStatistics.UpdatedAt) > 4*time.Hour {
-		user, err = h.updateCodeforcesSubmissionStatistics(ctx, user)
+	logger.Tracef("GetCodeforcesUserProfileImage: user.ID=%d, user.Username=%s", user.ID, user.Username)
+	logger.Tracef("GetCodeforcesUserProfileImage: RatingRecords=%v, SubmissionStatistics=%v",
+		user.RatingRecords, user.SubmissionStatistics)
 
+	// 检查更新rating
+	if user.RatingRecords == nil || user.RatingRecords.UpdatedAt.IsZero() || time.Since(user.RatingRecords.UpdatedAt) > 4*time.Hour {
+		logger.Tracef("GetCodeforcesUserProfileImage: updating rating records")
+		user, err = h.updateUserRatingRecords(ctx, user)
+		if err != nil {
+			return nil, fmt.Errorf("failed to update rating records: %w", err)
+		}
+	}
+
+	// 检查更新submission
+	if user.SubmissionStatistics == nil || user.SubmissionStatistics.UpdatedAt.IsZero() || time.Since(user.SubmissionStatistics.UpdatedAt) > 4*time.Hour {
+		logger.Tracef("GetCodeforcesUserProfileImage: updating submission statistics")
+		user, err = h.updateCodeforcesSubmissionStatistics(ctx, user)
+		if err != nil {
+			return nil, fmt.Errorf("failed to update submission statistics: %w", err)
+		}
 	}
 
 	solvedData := calculateCodeforcesSolvedData(user.SubmissionStatistics.Ac)
+
+	logger.Tracef("GetCodeforcesUserProfileImage: total solved=%d, solvedData=%v", len(user.SubmissionStatistics.Ac), solvedData)
 
 	// 转换为render需要的格式
 	var maxRating, currRating int
@@ -188,6 +208,8 @@ func (h *Handler) GetCodeforcesUserProfileImage(ctx context.Context, username st
 		currRating = user.RatingRecords.CurrRating
 	}
 
+	logger.Tracef("GetCodeforcesUserProfileImage: maxRating=%d, currRating=%d", maxRating, currRating)
+
 	renderProfile := render.CodeforcesUserProfile{
 		Avatar:     user.AvatarUrl,
 		Handle:     user.Username,
@@ -195,7 +217,7 @@ func (h *Handler) GetCodeforcesUserProfileImage(ctx context.Context, username st
 		FriendOf:   int(user.FriendNum),
 		Rating:     currRating,
 		Level:      render.Rating2Level(currRating),
-		Solved:     len(solvedData),
+		Solved:     len(user.SubmissionStatistics.Ac),
 		SolvedData: solvedData,
 	}
 

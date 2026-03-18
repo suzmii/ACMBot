@@ -10,10 +10,10 @@ import (
 	"github.com/suzmii/ACMBot/database"
 )
 
-// GetRace 从数据库获取指定平台的最新比赛记录
+// GetUpcomingRace 从数据库获取指定平台的最新比赛记录
 // 输入: resource - 平台名称（如 consts.RaceResourceCodeforces）
 // 输出: []database.Race - 比赛列表, error - 错误信息
-func (h *Handler) GetRace(ctx context.Context, resource string) ([]database.Race, error) {
+func (h *Handler) GetUpcomingRace(ctx context.Context, resource string) ([]database.Race, error) {
 	if resource == "" {
 		return nil, fmt.Errorf("resource cannot be empty")
 	}
@@ -49,7 +49,7 @@ func (h *Handler) GetAllRaces(ctx context.Context) (map[string][]database.Race, 
 
 	result := make(map[string][]database.Race)
 	for _, resource := range resources {
-		races, err := h.GetRace(ctx, resource)
+		races, err := h.GetUpcomingRace(ctx, resource)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get races for resource %s: %w", resource, err)
 		}
