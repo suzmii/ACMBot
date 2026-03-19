@@ -66,7 +66,8 @@ func formatRaceInfo(race database.Race) string {
 	msg.WriteString(fmt.Sprintf("比赛来源: %s\n", race.Resource))
 	msg.WriteString(fmt.Sprintf("比赛名称: %s\n", race.Title))
 	msg.WriteString(fmt.Sprintf("%s\n", timeInfo))
-	msg.WriteString(fmt.Sprintf("开始时间: %s\n", race.Start.Format("2006-01-02 15:04:05")))
+	weekdays := []string{"周日", "周一", "周二", "周三", "周四", "周五", "周六"}
+	msg.WriteString(fmt.Sprintf("开始时间: %s %s\n", race.Start.Format("2006-01-02 15:04:05"), weekdays[race.Start.Weekday()]))
 	msg.WriteString(fmt.Sprintf("持续时间: %s\n", durationStr))
 
 	return msg.String()
