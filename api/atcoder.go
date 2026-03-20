@@ -104,7 +104,7 @@ func fetchAtcoderAPI[T any](suffix string, args map[string]any) (*T, error) {
 func (api *API) FetchAtcoderSubmissionListAfter(username string, after time.Time) (*[]AtcoderSubmission, error) {
 	return fetchAtcoderAPI[[]AtcoderSubmission]("atcapi-api/v3/user/submissions", map[string]any{
 		"user":        username,
-		"from_second": after.Unix(),
+		"from_second": max(0, after.Unix()),
 	})
 }
 

@@ -8,6 +8,27 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AtcoderSubmission struct {
+	ID           int64              `json:"id"`
+	UserID       int64              `json:"user_id"`
+	SubmissionID int64              `json:"submission_id"`
+	ProblemID    string             `json:"problem_id"`
+	Point        float64            `json:"point"`
+	Status       string             `json:"status"`
+	At           pgtype.Timestamptz `json:"at"`
+}
+
+type AtcoderUser struct {
+	ID                   int64  `json:"id"`
+	Username             string `json:"username"`
+	AvatarUrl            string `json:"avatar_url"`
+	Rank                 string `json:"rank"`
+	Rating               int32  `json:"rating"`
+	HighestRating        int32  `json:"highest_rating"`
+	PromotionMessage     string `json:"promotion_message"`
+	SubmissionStatistics []byte `json:"submission_statistics"`
+}
+
 type CodeforcesSubmission struct {
 	ID      int64              `json:"id"`
 	UserID  int64              `json:"user_id"`

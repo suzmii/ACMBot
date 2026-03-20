@@ -19,4 +19,11 @@ type Store interface {
 	UpdateCodeforcesRatingRecords(ctx context.Context, userId int, originRecords []CodeforcesRatingRecord) (*CodeforcesRatingRecords, error)
 	UpdateCodeforcesSubmissionStatistics(ctx context.Context, userId int) (*CodeforcesSubmissionStatistics, error)
 	CreateCodeforcesSubmissions(ctx context.Context, submissions []CodeforcesSubmission) error
+
+	// Atcoder相关
+	CreateAtcoderUser(ctx context.Context, params *CreateAtcoderUserParams) (*AtcoderUserWithRecords, error)
+	GetAtcoderUserByUsername(ctx context.Context, username string) (*AtcoderUserWithRecords, error)
+	GetAtcoderUserByID(ctx context.Context, userID int64) (*AtcoderUserWithRecords, error)
+	UpdateAtcoderSubmissionStatistics(ctx context.Context, userId int) (*AtcoderSubmissionStatistics, error)
+	CreateAtcoderSubmissions(ctx context.Context, submissions []AtcoderSubmission) error
 }

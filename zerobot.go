@@ -77,6 +77,36 @@ func StartZeroBot(handler *handler.Handler) {
 	// 读取配置
 	cfg := config.LoadConfig()
 
+	// AtCoder 用户资料查询
+	zero.OnMessage(zero.RegexRule(`\s*at\s+(\S+)\s*$`)).Handle(func(ctx *zero.Ctx) {
+		c, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		matched := ctx.State["regex_matched"].([]string)
+		username := matched[1]
+
+		username = strings.Map(func(r rune) rune {
+			if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' {
+				return r
+			}
+			return -1
+		}, username)
+
+		if username == "" {
+			ctx.Send(message.Text("请输入有效的 AtCoder 用户名"))
+			return
+		}
+
+		image, err := handler.GetAtcoderUserProfileImage(c, username)
+		if err != nil {
+			userMsg := middleware.HandleError(err)
+			ctx.Send(message.Text(userMsg))
+			return
+		}
+
+		ctx.Send(message.ImageBytes(image))
+	})
+
 	// Codeforces 用户资料查询
 	zero.OnMessage(zero.RegexRule(`\s*cf\s+(\S+)\s*$`)).Handle(func(ctx *zero.Ctx) {
 		c, cancel := context.WithTimeout(context.Background(), 10*time.Second) // TODO: 配置文件定义等待时间

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/sirupsen/logrus"
 	"github.com/suzmii/ACMBot/errorx"
 )
 
@@ -17,6 +18,8 @@ func HandleError(err error) string {
 	if errors.Is(err, context.Canceled) {
 		return "请求超时，再试一次？"
 	}
+
+	logrus.Error(err)
 
 	return "出了点问题...暂时没法处理你的请求"
 }
