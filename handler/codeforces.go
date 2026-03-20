@@ -82,6 +82,9 @@ func (h *Handler) GetCodeforcesRatingImage(ctx context.Context, username string)
 	// 检查更新rating
 	if time.Since(user.RatingRecords.UpdatedAt) > 4*time.Hour {
 		user, err = h.updateUserRatingRecords(ctx, user)
+		if err != nil {
+			return nil, fmt.Errorf("failed to update rating records: %w", err)
+		}
 	}
 
 	// 检查是否有rating记录
