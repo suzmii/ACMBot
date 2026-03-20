@@ -24,6 +24,8 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 	page := r.pool.Acquire()
 	var err error
 
+	defer r.pool.Release(page)
+
 	if err = page.SetContent(
 		content.String(),
 		playwright.PageSetContentOptions{
