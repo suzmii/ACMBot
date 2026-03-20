@@ -216,8 +216,7 @@ func (api *API) FetchCodeforcesSubmissionsAfter(handle string, after time.Time) 
 		// 所有submission都早于期望时间
 		if correctStart.Before(after) {
 			break
-			// 有部分submission早于期望时间
-		} else if correctEnd.Before(after) {
+		} else if correctEnd.Before(after) { // 有部分submission早于期望时间
 			for _, submission := range correct {
 				// 早于或等于的都不要
 				if !time.Unix(submission.At, 0).After(after) {
@@ -226,8 +225,7 @@ func (api *API) FetchCodeforcesSubmissionsAfter(handle string, after time.Time) 
 				allSubmissions = append(allSubmissions, submission)
 			}
 			break
-			// 全部submission都在期望时间之后
-		} else {
+		} else { // 全部submission都在期望时间之后
 			allSubmissions = append(allSubmissions, correct...)
 		}
 		if len(correct) < perFetch {

@@ -27,42 +27,16 @@ const (
 // 全局限流器，所有 API 请求共享
 var apiLimiter = rate.NewLimiter(rate.Every(rateLimit), 1)
 
-type _config struct {
-	BaseURL     string
-	APIBaseURL  string
-	RateLimit   time.Duration
-	HTTPTimeout time.Duration
-}
-
-type AtcoderFetcher struct {
-	config  *_config
-	client  *colly.Collector
-	limiter *rate.Limiter
-}
-
-func NewAtcoderFetcher(config *_config) *AtcoderFetcher {
-	c := colly.NewCollector(
-		colly.AllowedDomains("atcapi.jp"),
-		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"),
-	)
-
-	return &AtcoderFetcher{
-		config:  config,
-		client:  c,
-		limiter: rate.NewLimiter(rate.Every(config.RateLimit), 1),
-	}
-}
-
 type AtcoderUser struct {
-	Handle           string // Atcoder用户名
+	Username         string // Atcoder用户名
 	Avatar           string // 头像URL
 	Rank             string
-	Rating           uint
+	Rating           int
 	IsProvisional    bool   // 分数是否与水平相符
 	Dan              string // 段位
 	PromotionMessage string // 升段信息
-	HighestRating    uint
-	RatedMatches     uint
+	HighestRating    int
+	RatedMatches     int
 	LastCompeted     string
 }
 
@@ -71,10 +45,10 @@ type AtcoderSubmission struct {
 	SubmissionTime int64   `json:"epoch_second"` // 提交时间（UNIX时间戳）
 	ProblemId      string  `json:"problem_id"`
 	ContestId      string  `json:"contest_id"`
-	Handle         string  `json:"user_id"`
+	Usernames      string  `json:"user_id"`
 	Language       string  `json:"language"`
 	Point          float32 `json:"point"`
-	Length         uint    `json:"length"`
+	Length         int     `json:"length"`
 	Status         string  `json:"result"` // 提交状态
 	ExecutionTime  int     `json:"execution_time"`
 }
@@ -87,22 +61,13 @@ type AtcoderProblem struct {
 type AtcoderContest struct {
 	Id             string `json:"id"`                 // 比赛ID
 	StartTime      int64  `json:"start_epoch_second"` // 开始时间（UNIX时间戳）
-	DurationSecond uint   `json:"duration_second"`    // 持续时间（秒）
+	DurationSecond int    `json:"duration_second"`    // 持续时间（秒）
 	Title          string `json:"title"`              // 完整标题
 	RateChange     string `json:"rate_change"`        // Rated分数范围
 }
 
-type AtcoderError struct {
-	StatusCode int
-	Message    string
-}
-
-func (e *AtcoderError) Error() string {
-	return fmt.Sprintf("atcapi error: status=%d, message=%s", e.StatusCode, e.Message)
-}
-
 // API 相关函数
-func fetchAPI[T any](suffix string, args map[string]any) (*T, error) {
+func fetchAtcoderAPI[T any](suffix string, args map[string]any) (*T, error) {
 	requestURL := apiBaseURL + "/" + suffix + "?"
 	for k, v := range args {
 		requestURL += k + "=" + fmt.Sprint(v) + "&"
@@ -136,53 +101,24 @@ func fetchAPI[T any](suffix string, args map[string]any) (*T, error) {
 	return &res, nil
 }
 
-func FetchAtcoderSubmissionListFrom(handle string, from int64) (*[]AtcoderSubmission, error) {
-	return fetchAPI[[]AtcoderSubmission]("atcapi-api/v3/user/submissions", map[string]any{
-		"user":        handle,
-		"from_second": from,
+func (api *API) FetchAtcoderSubmissionListAfter(username string, after time.Time) (*[]AtcoderSubmission, error) {
+	return fetchAtcoderAPI[[]AtcoderSubmission]("atcapi-api/v3/user/submissions", map[string]any{
+		"user":        username,
+		"from_second": after.Unix(),
 	})
 }
 
-// func FetchAtcoderSubmissionList(handle string) (*[]AtcoderSubmission, error) {
-// 	const maxCap = 500
-// 	submission := make([]AtcoderSubmission, 0)
-// 	var now int64 = 0
-// 	for {
-// 		nextSubmission, errs := FetchAtcoderSubmissionListFrom(handle, now)
-// 		if errs != nil {
-// 			return nil, errs
-// 		}
-// 		submission = append(submission, *nextSubmission...)
-// 		if len(*nextSubmission) < maxCap {
-// 			break
-// 		}
-// 		now = (*nextSubmission)[len(*nextSubmission)-1].SubmissionTime
-// 	}
-// 	return &submission, nil
-// }
-
-func FetchAtcoderProblemList() (*[]AtcoderProblem, error) {
-	return fetchAPI[[]AtcoderProblem]("resources/merged-problems.json", nil)
-}
-
-func FetchAtcoderContestList() (*[]AtcoderContest, error) {
-	return fetchAPI[[]AtcoderContest]("resources/contests.json", nil)
-}
-
-func FetchAtcoderUser(handle string) (*AtcoderUser, error) {
+func (api *API) FetchAtcoderUser(username string) (*AtcoderUser, error) {
 	logger := logger.WithFields(logrus.Fields{
-		"handle": handle,
+		"handle": username,
 		"action": "fetch_user",
 	})
 
 	logger.Info("Starting fetch user")
-	user := &AtcoderUser{Handle: handle}
+	user := &AtcoderUser{Username: username}
 	var e error
 
-	d := colly.NewCollector(
-		colly.AllowedDomains("atcapi.jp"),
-		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"),
-	)
+	d := api.atcoderClient.Clone()
 
 	d.OnHTML("tr", func(h *colly.HTMLElement) {
 		var err error
@@ -191,9 +127,9 @@ func FetchAtcoderUser(handle string) (*AtcoderUser, error) {
 			user.Rank = h.ChildText("td")
 		case "Rating":
 			td := h.DOM.Find("td")
-			user.Rating, err = atoui(td.Find(`span[class^="user-"]`).Text())
+			user.Rating, err = strconv.Atoi(td.Find(`span[class^="user-"]`).Text())
 			if err != nil {
-				logger.Infof("Failed to convert rating to uint: %v", err)
+				logger.Infof("Failed to convert rating to int: %v", err)
 				user = nil
 				e = fmt.Errorf("parse error: %v", err)
 			}
@@ -202,9 +138,9 @@ func FetchAtcoderUser(handle string) (*AtcoderUser, error) {
 			h.DOM.Find("td").Find("span").Each(func(i int, s *goquery.Selection) {
 				switch i {
 				case 0:
-					user.HighestRating, err = atoui(s.Text())
+					user.HighestRating, err = strconv.Atoi(s.Text())
 					if err != nil {
-						logger.Infof("Failed to convert highest rating to uint: %v", err)
+						logger.Infof("Failed to convert highest rating to int: %v", err)
 						user = nil
 						e = fmt.Errorf("parse error: %v", err)
 					}
@@ -215,9 +151,9 @@ func FetchAtcoderUser(handle string) (*AtcoderUser, error) {
 				}
 			})
 		case "Rated Matches":
-			user.RatedMatches, err = atoui(h.ChildText("td"))
+			user.RatedMatches, err = strconv.Atoi(h.ChildText("td"))
 			if err != nil {
-				logger.Infof("Failed to convert rated matches to uint: %v", err)
+				logger.Infof("Failed to convert rated matches to int: %v", err)
 				user = nil
 				e = fmt.Errorf("parse error: %v", err)
 			}
@@ -237,28 +173,20 @@ func FetchAtcoderUser(handle string) (*AtcoderUser, error) {
 
 		switch r.StatusCode {
 		case http.StatusNotFound:
-			e = usererr.ErrUserNotFound(handle)
+			e = usererr.ErrUserNotFound(username)
 		default:
-			e = &AtcoderError{
-				StatusCode: r.StatusCode,
-				Message:    err.Error(),
-			}
+			e = fmt.Errorf("failed to fetch Atcoder user: %v", err)
 		}
 		logger.WithFields(logrus.Fields{
-			"handle": handle,
+			"handle": username,
 			"error":  e,
 		}).Info("Failed to fetch Atcoder user")
 	})
 
-	url := baseURL + "/users/" + handle
+	url := baseURL + "/users/" + username
 	logger.Infof("Visiting: %v", url)
 	_ = d.Visit(url)
 
 	logger.Info("Completed fetch user")
 	return user, e
-}
-
-func atoui(s string) (uint, error) {
-	tmp, err := strconv.Atoi(s)
-	return uint(tmp), err
 }
