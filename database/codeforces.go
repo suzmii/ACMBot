@@ -36,6 +36,7 @@ func (db *dbStore) UpdateCodeforcesRatingRecords(ctx context.Context, userId int
 			}
 		}
 	}
+	records2insert.UpdatedAt = time.Now()
 
 	jsonb, err := jsonx.Marshal(records2insert)
 	if err != nil {
@@ -72,29 +73,14 @@ type CodeforcesSubmissionStatistics struct {
 func (db *dbStore) UpdateCodeforcesSubmissionStatistics(ctx context.Context, userId int) (*CodeforcesSubmissionStatistics, error) {
 	// FIXME: 使用事务; 插入前需要对submission进行排序
 	// 获取用户信息, 读取当前的提交统计
-	user, err := db.Querier.GetCodeforcesUserByID(ctx, int64(userId))
+	user, err := db.GetCodeforcesUserByID(ctx, int64(userId))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get codeforces user: %v", err)
 	}
 
-	// 解析当前的提交统计
-	var currentStats CodeforcesSubmissionStatistics
-	if len(user.SubmissionStatistics) > 0 {
-		if err := jsonx.Unmarshal(user.SubmissionStatistics, &currentStats); err != nil {
-			// 如果解析失败, 使用空统计重新开始
-			currentStats = CodeforcesSubmissionStatistics{
-				Version: 1,
-			}
-		}
-	} else {
-		currentStats = CodeforcesSubmissionStatistics{
-			Version: 1,
-		}
-	}
-
 	// 最后一个提交的时间
-	lastSubmissionAt := currentStats.LastSubmissionAt
-	submissions, err := db.Querier.GetCodeforcesSubmissionsAfter(ctx, sqlc.GetCodeforcesSubmissionsAfterParams{
+	lastSubmissionAt := user.SubmissionStatistics.LastSubmissionAt
+	newSubmissions, err := db.Querier.GetCodeforcesSubmissionsAfter(ctx, sqlc.GetCodeforcesSubmissionsAfterParams{
 		UserID: user.ID,
 		At:     pgtype.Timestamptz{Time: lastSubmissionAt, Valid: true},
 	})
@@ -103,24 +89,19 @@ func (db *dbStore) UpdateCodeforcesSubmissionStatistics(ctx context.Context, use
 		return nil, fmt.Errorf("failed to get submissions after id: %v", err)
 	}
 
-	// 如果没有新的提交, 直接返回
-	if len(submissions) == 0 {
-		return &currentStats, nil
-	}
-
 	// 3. 计算新的统计数据
 	// 用于去重的AC题目集合
 	acProblemMap := make(map[string]CodeforcesProblemForQuery)
 
 	// 首先将已有的AC题目添加到map中
-	for _, acProblem := range currentStats.Ac {
+	for _, acProblem := range user.SubmissionStatistics.Ac {
 		acProblemMap[acProblem.ID] = acProblem
 	}
 
 	// 处理新的提交
-	newTotalCount := currentStats.TotalCount
+	newTotalCount := user.SubmissionStatistics.TotalCount
 
-	for _, submission := range submissions {
+	for _, submission := range newSubmissions {
 		newTotalCount++
 
 		if submission.At.Time.Sub(lastSubmissionAt) > 0 {
@@ -156,7 +137,7 @@ func (db *dbStore) UpdateCodeforcesSubmissionStatistics(ctx context.Context, use
 		Ac:               acList,
 		LastSubmissionAt: lastSubmissionAt,
 		UpdatedAt:        time.Now(),
-		Version:          currentStats.Version, // TODO: Version 管理
+		Version:          user.SubmissionStatistics.Version, // TODO: Version 管理
 	}
 
 	// 更新数据库
@@ -246,38 +227,6 @@ type CodeforcesUserWithRecords struct {
 	SubmissionStatistics *CodeforcesSubmissionStatistics
 }
 
-// GetCodeforcesUserWithRecords 获取Codeforces用户及其解析后的rating记录和提交统计
-func (db *dbStore) GetCodeforcesUser(ctx context.Context, username string) (*CodeforcesUserWithRecords, error) {
-	user, err := db.Querier.GetCodeforcesUserByUsername(ctx, username)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get codeforces user by name: %w", err)
-	}
-
-	result := &CodeforcesUserWithRecords{
-		CodeforcesUser: user,
-	}
-
-	// 解析rating记录
-	if len(user.RatingRecords) > 0 {
-		var records CodeforcesRatingRecords
-		if err := jsonx.Unmarshal(user.RatingRecords, &records); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal rating records: %w", err)
-		}
-		result.RatingRecords = &records
-	}
-
-	// 解析提交统计
-	if len(user.SubmissionStatistics) > 0 {
-		var stats CodeforcesSubmissionStatistics
-		if err := jsonx.Unmarshal(user.SubmissionStatistics, &stats); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal submission statistics: %w", err)
-		}
-		result.SubmissionStatistics = &stats
-	}
-
-	return result, nil
-}
-
 type CreateCodeforcesUserParams struct {
 	Username  string `json:"username"`
 	AvatarUrl string `json:"avatar_url"`
@@ -325,4 +274,49 @@ func (db *dbStore) CreateCodeforcesUser(ctx context.Context, params *CreateCodef
 
 	result.CodeforcesUser = user
 	return result, nil
+}
+
+// parseCodeforcesUser 将sqlc.CodeforcesUser解析为CodeforcesUserWithRecords
+func (db *dbStore) parseCodeforcesUser(user sqlc.CodeforcesUser) (*CodeforcesUserWithRecords, error) {
+	result := &CodeforcesUserWithRecords{
+		CodeforcesUser: user,
+	}
+
+	// 解析rating记录
+	if len(user.RatingRecords) > 0 {
+		var records CodeforcesRatingRecords
+		if err := jsonx.Unmarshal(user.RatingRecords, &records); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal rating records: %w", err)
+		}
+		result.RatingRecords = &records
+	}
+
+	// 解析提交统计
+	if len(user.SubmissionStatistics) > 0 {
+		var stats CodeforcesSubmissionStatistics
+		if err := jsonx.Unmarshal(user.SubmissionStatistics, &stats); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal submission statistics: %w", err)
+		}
+		result.SubmissionStatistics = &stats
+	}
+
+	return result, nil
+}
+
+// GetCodeforcesUserByID 按ID获取Codeforces用户及其解析后的rating记录和提交统计
+func (db *dbStore) GetCodeforcesUserByID(ctx context.Context, userID int64) (*CodeforcesUserWithRecords, error) {
+	user, err := db.Querier.GetCodeforcesUserByIDRaw(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get codeforces user by id: %w", err)
+	}
+	return db.parseCodeforcesUser(user)
+}
+
+// GetCodeforcesUserByUsername 按用户名获取Codeforces用户及其解析后的rating记录和提交统计
+func (db *dbStore) GetCodeforcesUserByUsername(ctx context.Context, username string) (*CodeforcesUserWithRecords, error) {
+	user, err := db.Querier.GetCodeforcesUserByUsernameRaw(ctx, username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get codeforces user by username: %w", err)
+	}
+	return db.parseCodeforcesUser(user)
 }

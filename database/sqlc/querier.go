@@ -15,8 +15,8 @@ type Querier interface {
 	CreateCodeforcesUserRaw(ctx context.Context, arg CreateCodeforcesUserRawParams) (CodeforcesUser, error)
 	CreateRaceRaw(ctx context.Context, races []byte) error
 	GetCodeforcesSubmissionsAfter(ctx context.Context, arg GetCodeforcesSubmissionsAfterParams) ([]CodeforcesSubmission, error)
-	GetCodeforcesUserByID(ctx context.Context, id int64) (CodeforcesUser, error)
-	GetCodeforcesUserByUsername(ctx context.Context, username string) (CodeforcesUser, error)
+	GetCodeforcesUserByIDRaw(ctx context.Context, id int64) (CodeforcesUser, error)
+	GetCodeforcesUserByUsernameRaw(ctx context.Context, username string) (CodeforcesUser, error)
 	GetCodeforcesUserLastSubmission(ctx context.Context, userID int64) (CodeforcesSubmission, error)
 	GetLastRaceCreatedAt(ctx context.Context) (pgtype.Timestamptz, error)
 	GetLastRaceRaw(ctx context.Context) ([]byte, error)

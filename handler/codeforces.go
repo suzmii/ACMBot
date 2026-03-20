@@ -42,7 +42,7 @@ func (h *Handler) getAndInitUser(ctx context.Context, username string) (*databas
 		return nil, fmt.Errorf("username cannot be empty") // TODO: change to usererr
 	}
 
-	user, err := h.store.GetCodeforcesUser(ctx, username)
+	user, err := h.store.GetCodeforcesUserByUsername(ctx, username)
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
 			return nil, fmt.Errorf("failed to get user from database: %w", err)
