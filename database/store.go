@@ -19,6 +19,7 @@ type Store interface {
 	UpdateCodeforcesRatingRecords(ctx context.Context, userId int, originRecords []CodeforcesRatingRecord) (*CodeforcesRatingRecords, error)
 	UpdateCodeforcesSubmissionStatistics(ctx context.Context, userId int) (*CodeforcesSubmissionStatistics, error)
 	CreateCodeforcesSubmissions(ctx context.Context, submissions []CodeforcesSubmission) error
+	GetRandomCodeforcesProblem(ctx context.Context, filter CodeforcesProblemFilter) (*CodeforcesProblem, error)
 
 	// Atcoder相关
 	CreateAtcoderUser(ctx context.Context, params *CreateAtcoderUserParams) (*AtcoderUserWithRecords, error)
@@ -26,4 +27,10 @@ type Store interface {
 	GetAtcoderUserByID(ctx context.Context, userID int64) (*AtcoderUserWithRecords, error)
 	UpdateAtcoderSubmissionStatistics(ctx context.Context, userId int) (*AtcoderSubmissionStatistics, error)
 	CreateAtcoderSubmissions(ctx context.Context, submissions []AtcoderSubmission) error
+}
+
+type CodeforcesProblemFilter struct {
+	MinRating *int
+	MaxRating *int
+	Tags      []string
 }

@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+    <script>{{ .TailwindJS }}</script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        custom: ['"ZSFT-ENMIN-184"'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>{{ .FontCSS }}</style>
+</head>
+<body class="bg-slate-100">
+<div id="background" class="w-[860px] p-8 font-custom text-slate-900">
+    <div class="rounded-2xl bg-white p-6 shadow-md">
+        <div class="mb-3 flex items-center justify-between">
+            <h1 class="text-2xl font-bold">{{ .Title }}</h1>
+            <div class="rounded-full bg-indigo-600 px-4 py-1 text-sm font-semibold text-white">Rating {{ .Rating }}</div>
+        </div>
+        <div class="mb-4 text-xs text-slate-600">{{ .URL }}</div>
+
+        <div class="mb-4 grid grid-cols-2 gap-3">
+            <div class="rounded-lg bg-slate-100 px-3 py-2 text-sm"><span class="font-semibold">Time Limit:</span> {{ .TimeLimit }}</div>
+            <div class="rounded-lg bg-slate-100 px-3 py-2 text-sm"><span class="font-semibold">Memory Limit:</span> {{ .MemoryLimit }}</div>
+        </div>
+
+        <div class="mb-4 flex flex-wrap gap-2">
+            {{ range .Tags }}
+            <span class="rounded-md bg-violet-100 px-2 py-1 text-xs text-violet-700">{{ . }}</span>
+            {{ end }}
+        </div>
+
+        <div class="space-y-3">
+            {{ range .Statement }}
+            <p class="text-[15px] leading-7">{{ . }}</p>
+            {{ end }}
+        </div>
+
+        <div class="mt-6">
+            <h2 class="mb-2 text-xl font-semibold">Input</h2>
+            <div class="space-y-2">
+                {{ range .Input }}
+                <p class="text-[15px] leading-7">{{ . }}</p>
+                {{ end }}
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <h2 class="mb-2 text-xl font-semibold">Output</h2>
+            <div class="space-y-2">
+                {{ range .Output }}
+                <p class="text-[15px] leading-7">{{ . }}</p>
+                {{ end }}
+            </div>
+        </div>
+
+        {{ if .Samples }}
+        <div class="mt-6">
+            <h2 class="mb-2 text-xl font-semibold">Samples</h2>
+            <div class="space-y-4">
+                {{ range .Samples }}
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="rounded-lg bg-slate-900 p-3 text-xs text-green-300">
+                        <div class="mb-1 font-semibold text-slate-300">Input</div>
+                        <pre class="whitespace-pre-wrap break-words">{{ .Input }}</pre>
+                    </div>
+                    <div class="rounded-lg bg-slate-900 p-3 text-xs text-cyan-300">
+                        <div class="mb-1 font-semibold text-slate-300">Output</div>
+                        <pre class="whitespace-pre-wrap break-words">{{ .Output }}</pre>
+                    </div>
+                </div>
+                {{ end }}
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</div>
+</body>
+<script>
+    function renderMath() {
+        if (!window.renderMathInElement) {
+            setTimeout(renderMath, 50);
+            return;
+        }
+        renderMathInElement(document.getElementById("background"), {
+            throwOnError: false,
+            delimiters: [
+                {left: "$$$", right: "$$$", display: false},
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "\\[", right: "\\]", display: true}
+            ]
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", renderMath);
+</script>
+</html>

@@ -149,6 +149,27 @@ type RankUsers struct {
 	FontCSS    template.CSS
 }
 
+type CodeforcesProblemSample struct {
+	Input  string
+	Output string
+}
+
+type CodeforcesRandomProblem struct {
+	Title       string
+	URL         string
+	Rating      int
+	Tags        []string
+	TimeLimit   string
+	MemoryLimit string
+	Statement   []string
+	Input       []string
+	Output      []string
+	Samples     []CodeforcesProblemSample
+
+	TailwindJS template.JS
+	FontCSS    template.CSS
+}
+
 func (r *Render) Rank(ctx context.Context, users []RankUser) ([]byte, error) {
 	defer logx.TraceWall(logger, "Rank")()
 	logger.Trace("rendering codeforces Rank ", users)
@@ -160,6 +181,28 @@ func (r *Render) Rank(ctx context.Context, users []RankUser) ([]byte, error) {
 			Users:      users,
 			TailwindJS: internal.ResourceTailwind,
 			FontCSS:    internal.ResourceZsft184,
+		},
+	)
+}
+
+func (r *Render) RandomProblem(ctx context.Context, p CodeforcesRandomProblem) ([]byte, error) {
+	defer logx.TraceWall(logger, "RandomProblem")()
+	return r.executeTemplate(
+		ctx,
+		internal.TemplateCodeforcesRandomProblem,
+		&CodeforcesRandomProblem{
+			Title:       p.Title,
+			URL:         p.URL,
+			Rating:      p.Rating,
+			Tags:        p.Tags,
+			TimeLimit:   p.TimeLimit,
+			MemoryLimit: p.MemoryLimit,
+			Statement:   p.Statement,
+			Input:       p.Input,
+			Output:      p.Output,
+			Samples:     p.Samples,
+			TailwindJS:  internal.ResourceTailwind,
+			FontCSS:     internal.ResourceZsft184,
 		},
 	)
 }

@@ -24,6 +24,8 @@ func (t Template) String() string {
 		return "TemplattCodeforcesRank"
 	case TemplateRaceCalendar:
 		return "TemplateRaceCalendar"
+	case TemplateCodeforcesRandomProblem:
+		return "TemplateCodeforcesRandomProblem"
 	default:
 		return "Unknown"
 	}
@@ -36,6 +38,7 @@ const (
 	TemplateAtcoderProfile
 	TemplattCodeforcesRank
 	TemplateRaceCalendar
+	TemplateCodeforcesRandomProblem
 )
 
 var (
@@ -49,6 +52,8 @@ var (
 	TemplateContentAtcoderProfile string
 	//go:embed templates/codeforces_rating_rank.gohtml
 	TemplateContentCodeforcesRank string
+	//go:embed templates/codeforces_random_problem.gohtml
+	TemplateContentCodeforcesRandomProblem string
 )
 
 var templateContents = map[Template]*string{
@@ -57,6 +62,7 @@ var templateContents = map[Template]*string{
 	TemplateCodeforcesRatingRecords: &TemplateContentCodeforcesRatingRecords,
 	TemplateAtcoderProfile:          &TemplateContentAtcoderProfile,
 	TemplattCodeforcesRank:          &TemplateContentCodeforcesRank,
+	TemplateCodeforcesRandomProblem: &TemplateContentCodeforcesRandomProblem,
 }
 
 // GetTemplate returns a compiled template by name.

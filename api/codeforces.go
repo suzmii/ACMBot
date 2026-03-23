@@ -6,8 +6,11 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"net/http"
+	"net/url"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -16,6 +19,7 @@ import (
 	"github.com/suzmii/ACMBot/config/subconfig"
 	"github.com/suzmii/ACMBot/errorx/usererr"
 	"github.com/suzmii/ACMBot/util"
+	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/time/rate"
 
 	"math/rand"
@@ -267,4 +271,151 @@ func (api *API) FetchCodeforcesContestList(gym bool) ([]CodeforcesRace, error) {
 	return fetchCodeforcesAPI[[]CodeforcesRace]("contest.list", map[string]any{
 		"gym": gym,
 	}, &api.cfg)
+}
+
+type ProblemSample struct {
+	Input  string
+	Output string
+}
+
+type ProblemStatement struct {
+	URL         string
+	Title       string
+	TimeLimit   string
+	MemoryLimit string
+	Statement   []string
+	Input       []string
+	Output      []string
+	Samples     []ProblemSample
+}
+
+func BuildCodeforcesProblemURL(problem Problem) string {
+	if problem.ContestID > 0 {
+		return fmt.Sprintf("https://codeforces.com/problemset/problem/%d/%s", problem.ContestID, problem.Index)
+	}
+	if problem.ProblemSetName != "" {
+		return fmt.Sprintf("https://codeforces.com/problemset/problem/%s/%s", problem.ProblemSetName, problem.Index)
+	}
+	return ""
+}
+
+func (api *API) FetchCodeforcesProblemStatement(problem Problem) (*ProblemStatement, error) {
+	problemURL := BuildCodeforcesProblemURL(problem)
+	if problemURL == "" {
+		return nil, fmt.Errorf("invalid problem identity: contestId=%d, problemsetName=%s, index=%s", problem.ContestID, problem.ProblemSetName, problem.Index)
+	}
+
+	req, err := http.NewRequest(http.MethodGet, problemURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request for problem page: %w", err)
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch problem page: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch problem page, status=%s", resp.Status)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse problem page: %w", err)
+	}
+
+	ps := doc.Find(".problem-statement").First()
+	if ps.Length() == 0 {
+		return nil, fmt.Errorf("failed to parse statement: .problem-statement not found")
+	}
+
+	statement := &ProblemStatement{
+		URL:         problemURL,
+		Title:       normalizeText(ps.Find(".title").First().Text()),
+		TimeLimit:   normalizeText(ps.Find(".time-limit").First().Text()),
+		MemoryLimit: normalizeText(ps.Find(".memory-limit").First().Text()),
+	}
+
+	if statement.Title == "" {
+		statement.Title = fmt.Sprintf("%s %s", problem.ProblemSetName, problem.Index)
+	}
+
+	ps.Children().Each(func(_ int, child *goquery.Selection) {
+		class, _ := child.Attr("class")
+		switch class {
+		case "header", "input-specification", "output-specification", "sample-test", "note":
+			return
+		}
+		child.Find("p").Each(func(_ int, p *goquery.Selection) {
+			if text := normalizeText(p.Text()); text != "" {
+				statement.Statement = append(statement.Statement, text)
+			}
+		})
+	})
+	if len(statement.Statement) == 0 {
+		ps.Find("p").Each(func(_ int, p *goquery.Selection) {
+			if text := normalizeText(p.Text()); text != "" {
+				statement.Statement = append(statement.Statement, text)
+			}
+		})
+	}
+
+	ps.Find(".input-specification p").Each(func(_ int, p *goquery.Selection) {
+		if text := normalizeText(p.Text()); text != "" {
+			statement.Input = append(statement.Input, text)
+		}
+	})
+	ps.Find(".output-specification p").Each(func(_ int, p *goquery.Selection) {
+		if text := normalizeText(p.Text()); text != "" {
+			statement.Output = append(statement.Output, text)
+		}
+	})
+
+	inputSamples := ps.Find(".sample-test .input pre")
+	outputSamples := ps.Find(".sample-test .output pre")
+	count := inputSamples.Length()
+	if outputSamples.Length() < count {
+		count = outputSamples.Length()
+	}
+	for i := 0; i < count; i++ {
+		statement.Samples = append(statement.Samples, ProblemSample{
+			Input:  extractPreText(inputSamples.Eq(i)),
+			Output: extractPreText(outputSamples.Eq(i)),
+		})
+	}
+
+	return statement, nil
+}
+
+var preTagRegex = regexp.MustCompile(`<[^>]+>`)
+
+func extractPreText(sel *goquery.Selection) string {
+	if sel == nil || sel.Length() == 0 {
+		return ""
+	}
+	raw, err := sel.Html()
+	if err != nil {
+		return normalizeText(sel.Text())
+	}
+	raw = strings.ReplaceAll(raw, "<br/>", "\n")
+	raw = strings.ReplaceAll(raw, "<br />", "\n")
+	raw = strings.ReplaceAll(raw, "<br>", "\n")
+	raw = preTagRegex.ReplaceAllString(raw, "")
+	raw = html.UnescapeString(raw)
+	return strings.TrimSpace(raw)
+}
+
+func normalizeText(s string) string {
+	s = html.UnescapeString(s)
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return ""
+	}
+	parts := strings.Fields(s)
+	return strings.Join(parts, " ")
+}
+
+func EscapeCodeforcesProblemTag(tag string) string {
+	return url.QueryEscape(strings.TrimSpace(tag))
 }
