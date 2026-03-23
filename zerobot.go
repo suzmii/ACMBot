@@ -185,6 +185,22 @@ func StartZeroBot(handler *handler.Handler) {
 		ctx.Send(message.ImageBytes(image))
 	})
 
+	// Codeforces 题面查询
+	zero.OnMessage(zero.RegexRule(`\s*(problem|题面)\s+(\S+)\s*$`)).Handle(func(ctx *zero.Ctx) {
+		c, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+		defer cancel()
+
+		matched := ctx.State["regex_matched"].([]string)
+		problemID := strings.TrimSpace(matched[2])
+		image, err := handler.GetCodeforcesProblemStatementImage(c, problemID)
+		if err != nil {
+			userMsg := middleware.HandleError(err)
+			ctx.Send(message.Text(userMsg))
+			return
+		}
+		ctx.Send(message.ImageBytes(image))
+	})
+
 	// 近期比赛查询（支持所有平台和特定平台）
 	zero.OnMessage(zero.RegexRule(`\s*(race|比赛|近期比赛|近期\s*(.+))\s*(\d*)\s*$`)).Handle(func(ctx *zero.Ctx) {
 		c, cancel := context.WithTimeout(context.Background(), 10*time.Second)

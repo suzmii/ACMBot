@@ -16,7 +16,7 @@ import (
 	"github.com/suzmii/ACMBot/render"
 )
 
-var rangeTokenRe = regexp.MustCompile(`^(\d{3,4})\s*[~～-]\s*(\d{3,4})$`)
+var ratingRangeRe = regexp.MustCompile(`^(\d{3,4})\s*[~～-]\s*(\d{3,4})$`)
 
 func parseRandomProblemFilter(expr string) (database.CodeforcesProblemFilter, error) {
 	filter := database.CodeforcesProblemFilter{}
@@ -33,7 +33,7 @@ func parseRandomProblemFilter(expr string) (database.CodeforcesProblemFilter, er
 			continue
 		}
 
-		if m := rangeTokenRe.FindStringSubmatch(token); len(m) == 3 {
+		if m := ratingRangeRe.FindStringSubmatch(token); len(m) == 3 {
 			if hasRating {
 				return filter, errorx.NewUserError("只能设置一种 rating 筛选（单值或范围）")
 			}
