@@ -73,6 +73,19 @@ func formatRaceInfo(race database.Race) string {
 	return msg.String()
 }
 
+func sanitizeCodeforcesUsername(username string) string {
+	return strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') ||
+			(r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9') ||
+			r == '_' ||
+			r == '.' {
+			return r
+		}
+		return -1
+	}, username)
+}
+
 func StartZeroBot(handler *handler.Handler) {
 	// 读取配置
 	cfg := config.LoadConfig()
@@ -84,13 +97,8 @@ func StartZeroBot(handler *handler.Handler) {
 		matched := ctx.State["regex_matched"].([]string)
 		username := matched[1] // 获取第一个非空白字符序列作为用户名
 
-		// 去除特殊字符，只保留字母、数字和下划线
-		username = strings.Map(func(r rune) rune {
-			if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' {
-				return r
-			}
-			return -1
-		}, username)
+		// 去除无效字符，保留 Codeforces 用户名常见字符
+		username = sanitizeCodeforcesUsername(username)
 
 		if username == "" {
 			ctx.Send(message.Text("请输入有效的 Codeforces 用户名"))
@@ -113,13 +121,8 @@ func StartZeroBot(handler *handler.Handler) {
 		matched := ctx.State["regex_matched"].([]string)
 		username := matched[2] // 获取用户名
 
-		// 去除特殊字符，只保留字母、数字和下划线
-		username = strings.Map(func(r rune) rune {
-			if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' {
-				return r
-			}
-			return -1
-		}, username)
+		// 去除无效字符，保留 Codeforces 用户名常见字符
+		username = sanitizeCodeforcesUsername(username)
 
 		if username == "" {
 			ctx.Send(message.Text("请输入有效的 Codeforces 用户名"))
