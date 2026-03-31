@@ -11,6 +11,8 @@ var (
 	resourceEcharts string
 	//go:embed templates/script/tailwindcss.js
 	resourceTailwind string
+	//go:embed templates/script/render-wait-assets.js
+	resourceRenderWaitAssets string
 	//go:embed templates/font/zsft184.woff2
 	resourceZsft184 []byte
 )
@@ -19,6 +21,8 @@ var (
 	ResourceEcharts = template.JS(resourceEcharts)
 
 	ResourceTailwind = template.JS(resourceTailwind)
+
+	ResourceRenderWaitAssets = template.JS(resourceRenderWaitAssets)
 
 	ResourceZsft184 = template.CSS(`@font-face {
         font-family: 'ZSFT-ENMIN-184';

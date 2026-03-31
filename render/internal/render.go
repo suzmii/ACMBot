@@ -35,12 +35,8 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 		return nil, err
 	}
 
-	// 等字体、布局真正稳定
-	_, err = page.Evaluate(`() => {
-		return document.fonts.ready.then(() => {
-			return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))
-		})
-	}`)
+	// 等字体、图片和布局真正稳定
+	_, err = page.Evaluate(string(ResourceRenderWaitAssets))
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +45,19 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 	result, err := page.Evaluate(`() => {
 		const el = document.getElementById('background') || document.getElementById('main') || document.body;
 		const rect = el.getBoundingClientRect();
-		return [Math.ceil(rect.width), Math.ceil(rect.height)];
+		const width = Math.max(
+			Math.ceil(rect.width),
+			el.scrollWidth,
+			document.documentElement.scrollWidth,
+			document.body ? document.body.scrollWidth : 0,
+		);
+		const height = Math.max(
+			Math.ceil(rect.height),
+			el.scrollHeight,
+			document.documentElement.scrollHeight,
+			document.body ? document.body.scrollHeight : 0,
+		);
+		return [width, height];
 	}`)
 	if err != nil {
 		return nil, err
@@ -66,7 +74,23 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 	// 等 viewport resize 生效
 	_, _ = page.Evaluate(`() => new Promise(r => requestAnimationFrame(r))`)
 
-	return page.Screenshot(playwright.PageScreenshotOptions{
+	target := page.Locator("#background")
+	count, err := target.Count()
+	if err != nil {
+		return nil, err
+	}
+	if count == 0 {
+		target = page.Locator("#main")
+		count, err = target.Count()
+		if err != nil {
+			return nil, err
+		}
+	}
+	if count == 0 {
+		target = page.Locator("body")
+	}
+
+	return target.Screenshot(playwright.LocatorScreenshotOptions{
 		Type: playwright.ScreenshotTypePng,
 	})
 }

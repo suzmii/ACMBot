@@ -31,3 +31,4 @@ _*
 *.toml
 
 .kilocode*
+.cache/

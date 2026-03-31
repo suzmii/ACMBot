@@ -14,6 +14,7 @@ import (
 	"github.com/suzmii/ACMBot/database"
 	pkghandler "github.com/suzmii/ACMBot/handler"
 	pkgrender "github.com/suzmii/ACMBot/render"
+	"github.com/suzmii/ACMBot/testutil"
 	"github.com/suzmii/ACMBot/util/logx"
 )
 
@@ -67,15 +68,13 @@ var testUsername = "2c2048d2"
 func TestCodeforcesRatingRecords(t *testing.T) {
 	bytes, err := handler.GetCodeforcesRatingImage(t.Context(), testUsername)
 	require.NoError(t, err)
-	err = os.WriteFile(fmt.Sprintf("codeforces_rating_%s.png", testUsername), bytes, 0644)
-	require.NoError(t, err)
+	testutil.WriteArtifact(t, []string{".cache", "integration-tests", fmt.Sprintf("codeforces_rating_%s.png", testUsername)}, bytes)
 }
 
 func TestCodeforcesProfile(t *testing.T) {
 	bytes, err := handler.GetCodeforcesUserProfileImage(t.Context(), testUsername)
 	require.NoError(t, err)
-	err = os.WriteFile(fmt.Sprintf("codeforces_profile_%s.png", testUsername), bytes, 0644)
-	require.NoError(t, err)
+	testutil.WriteArtifact(t, []string{".cache", "integration-tests", fmt.Sprintf("codeforces_profile_%s.png", testUsername)}, bytes)
 }
 
 func BenchmarkCodeforcesRatingRecords(b *testing.B) {

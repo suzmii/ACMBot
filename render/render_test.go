@@ -3,9 +3,11 @@ package render
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/suzmii/ACMBot/config/subconfig"
+	"github.com/suzmii/ACMBot/testutil"
 )
 
 var render *Render
@@ -104,6 +106,48 @@ func TestRank(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	err = os.WriteFile("rank.png", image, 0644)
+	testutil.WriteArtifact(t, []string{"..", ".cache", "render-tests", "rank.png"}, image)
+}
+
+func TestProfileV2(t *testing.T) {
+	image, err := render.ProfileV2(t.Context(), CodeforcesUserProfile{
+		Avatar:    "https://userpic.codeforces.org/3363857/title/dfaf69f954d867bd.jpg",
+		Handle:    "tourist.v2",
+		MaxRating: 3979,
+		FriendOf:  78231,
+		Rating:    3900,
+		Level:     Rating2Level(3900),
+		Solved:    4287,
+		SolvedData: []CodeforcesUserSolvedData{
+			{Range: "800+", Percent: 38.4},
+			{Range: "1400+", Percent: 32.1},
+			{Range: "2000+", Percent: 20.8},
+			{Range: "2600+", Percent: 8.7},
+		},
+	})
 	require.NoError(t, err)
+	testutil.WriteArtifact(t, []string{"..", ".cache", "render-tests", "codeforces_profile_v2.png"}, image)
+}
+
+func TestAtcoderProfile(t *testing.T) {
+	image, err := render.AtcoderProfile(t.Context(), AtcoderUserProfile{
+		Avatar:           "https://img.atcoder.jp/assets/top/img/logo_bk.svg",
+		Handle:           "rng_58",
+		MaxRating:        4123,
+		PromotionMessage: "12x Heuristic",
+		Rating:           4011,
+		Level:            AtcoderRating2Level(4011, "1"),
+		Solved:           1934,
+		SolvedData: []AtcoderUserSolvedData{
+			{Range: "~399", Percent: 14.2},
+			{Range: "400~799", Percent: 27.8},
+			{Range: "800~1199", Percent: 25.4},
+			{Range: "1200~1599", Percent: 18.6},
+			{Range: "1600~1999", Percent: 9.1},
+			{Range: "2000+", Percent: 4.9},
+		},
+		Time: time.Now().Format("2006-01-02 15:04:05"),
+	})
+	require.NoError(t, err)
+	testutil.WriteArtifact(t, []string{"..", ".cache", "render-tests", "atcoder_profile.png"}, image)
 }
