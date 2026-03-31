@@ -1,10 +1,10 @@
 -- name: CreateCodeforcesUserRaw :one
 INSERT INTO codeforces_users (username, avatar_url, friend_num, rating_records, submission_statistics) VALUES ($1, $2, $3, $4, $5) RETURNING *;
 
--- name: GetCodeforcesUserByID :one
+-- name: GetCodeforcesUserByIDRaw :one
 SELECT * FROM codeforces_users where id = $1;
 
--- name: GetCodeforcesUserByUsername :one
+-- name: GetCodeforcesUserByUsernameRaw :one
 SELECT * FROM codeforces_users where username = $1;
 
 -- name: GetCodeforcesUserLastSubmission :one

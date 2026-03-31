@@ -100,12 +100,12 @@ func (q *Queries) GetCodeforcesSubmissionsAfter(ctx context.Context, arg GetCode
 	return items, nil
 }
 
-const getCodeforcesUserByID = `-- name: GetCodeforcesUserByID :one
+const getCodeforcesUserByIDRaw = `-- name: GetCodeforcesUserByIDRaw :one
 SELECT id, username, avatar_url, friend_num, rating_records, submission_statistics FROM codeforces_users where id = $1
 `
 
-func (q *Queries) GetCodeforcesUserByID(ctx context.Context, id int64) (CodeforcesUser, error) {
-	row := q.db.QueryRow(ctx, getCodeforcesUserByID, id)
+func (q *Queries) GetCodeforcesUserByIDRaw(ctx context.Context, id int64) (CodeforcesUser, error) {
+	row := q.db.QueryRow(ctx, getCodeforcesUserByIDRaw, id)
 	var i CodeforcesUser
 	err := row.Scan(
 		&i.ID,
@@ -118,12 +118,12 @@ func (q *Queries) GetCodeforcesUserByID(ctx context.Context, id int64) (Codeforc
 	return i, err
 }
 
-const getCodeforcesUserByUsername = `-- name: GetCodeforcesUserByUsername :one
+const getCodeforcesUserByUsernameRaw = `-- name: GetCodeforcesUserByUsernameRaw :one
 SELECT id, username, avatar_url, friend_num, rating_records, submission_statistics FROM codeforces_users where username = $1
 `
 
-func (q *Queries) GetCodeforcesUserByUsername(ctx context.Context, username string) (CodeforcesUser, error) {
-	row := q.db.QueryRow(ctx, getCodeforcesUserByUsername, username)
+func (q *Queries) GetCodeforcesUserByUsernameRaw(ctx context.Context, username string) (CodeforcesUser, error) {
+	row := q.db.QueryRow(ctx, getCodeforcesUserByUsernameRaw, username)
 	var i CodeforcesUser
 	err := row.Scan(
 		&i.ID,

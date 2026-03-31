@@ -11,15 +11,21 @@ import (
 )
 
 type Querier interface {
+	CreateAtcoderSubmissionsRaw(ctx context.Context, arg CreateAtcoderSubmissionsRawParams) error
+	CreateAtcoderUserRaw(ctx context.Context, arg CreateAtcoderUserRawParams) (AtcoderUser, error)
 	CreateCodeforcesSubmissionsRaw(ctx context.Context, arg CreateCodeforcesSubmissionsRawParams) error
 	CreateCodeforcesUserRaw(ctx context.Context, arg CreateCodeforcesUserRawParams) (CodeforcesUser, error)
 	CreateRaceRaw(ctx context.Context, races []byte) error
+	GetAtcoderSubmissionsAfter(ctx context.Context, arg GetAtcoderSubmissionsAfterParams) ([]AtcoderSubmission, error)
+	GetAtcoderUserByIDRaw(ctx context.Context, id int64) (AtcoderUser, error)
+	GetAtcoderUserByUsernameRaw(ctx context.Context, username string) (AtcoderUser, error)
 	GetCodeforcesSubmissionsAfter(ctx context.Context, arg GetCodeforcesSubmissionsAfterParams) ([]CodeforcesSubmission, error)
-	GetCodeforcesUserByID(ctx context.Context, id int64) (CodeforcesUser, error)
-	GetCodeforcesUserByUsername(ctx context.Context, username string) (CodeforcesUser, error)
+	GetCodeforcesUserByIDRaw(ctx context.Context, id int64) (CodeforcesUser, error)
+	GetCodeforcesUserByUsernameRaw(ctx context.Context, username string) (CodeforcesUser, error)
 	GetCodeforcesUserLastSubmission(ctx context.Context, userID int64) (CodeforcesSubmission, error)
 	GetLastRaceCreatedAt(ctx context.Context) (pgtype.Timestamptz, error)
 	GetLastRaceRaw(ctx context.Context) ([]byte, error)
+	UpdateAtcoderSubmissionStatisticsRaw(ctx context.Context, arg UpdateAtcoderSubmissionStatisticsRawParams) error
 	UpdateCodeforcesRatingRecordsRaw(ctx context.Context, arg UpdateCodeforcesRatingRecordsRawParams) error
 	UpdateCodeforcesSubmissionStatisticsRaw(ctx context.Context, arg UpdateCodeforcesSubmissionStatisticsRawParams) error
 }
