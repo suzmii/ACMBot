@@ -26,7 +26,7 @@ func (h *Handler) initCodeforcesUser(ctx context.Context, username string) (*dat
 	}
 
 	user, err := h.store.CreateCodeforcesUser(ctx, &database.CreateCodeforcesUserParams{
-		Username:  username,
+		Username:  userInfo.Username,
 		AvatarUrl: userInfo.Avatar,
 		FriendNum: int32(userInfo.FriendCount),
 	})
@@ -94,7 +94,7 @@ func (h *Handler) GetCodeforcesRatingImage(ctx context.Context, username string)
 
 	// 渲染图片
 	imageData, err := h.render.RatingDetail(ctx, render.CodeforcesRatingRecords{
-		Handle: username,
+		Handle: user.Username,
 		Data:   transer.CodeforcesRatingRecordDB2Render(user.RatingRecords.Records),
 	})
 	if err != nil {
