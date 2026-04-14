@@ -79,7 +79,8 @@ func sanitizeCodeforcesUsername(username string) string {
 			(r >= 'A' && r <= 'Z') ||
 			(r >= '0' && r <= '9') ||
 			r == '_' ||
-			r == '.' {
+			r == '.' ||
+			r == '-' {
 			return r
 		}
 		return -1
