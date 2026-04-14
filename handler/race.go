@@ -10,6 +10,33 @@ import (
 	"github.com/suzmii/ACMBot/database"
 )
 
+// GetAllRaces 从数据库获取所有平台的最新比赛记录
+// 输入: 无
+// 输出: map[string][]database.Race - 按平台分组的比赛列表, error - 错误信息
+func (h *Handler) GetAllRaces(ctx context.Context) (map[string][]database.Race, error) {
+	races, err := h.store.GetLastRace(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get races from database: %w", err)
+	}
+
+	result := map[string][]database.Race{
+		consts.RaceResourceCodeforces: {},
+		consts.RaceResourceAtcoder:    {},
+		consts.RaceResourceLeetcode:   {},
+		consts.RaceResourceLuogu:      {},
+		consts.RaceResourceNowcoder:   {},
+	}
+
+	for _, race := range races {
+		race.Start = race.Start.In(time.Local)
+		race.End = race.End.In(time.Local)
+
+		result[race.Resource] = append(result[race.Resource], race)
+	}
+
+	return result, nil
+}
+
 // GetUpcomingRace 从数据库获取指定平台的最新比赛记录
 // 输入: resource - 平台名称（如 consts.RaceResourceCodeforces）
 // 输出: []database.Race - 比赛列表, error - 错误信息
@@ -35,30 +62,6 @@ func (h *Handler) GetUpcomingRace(ctx context.Context, resource string) ([]datab
 	}
 
 	return races, nil
-}
-
-// GetAllRaces 从数据库获取所有平台的最新比赛记录
-// 输入: 无
-// 输出: map[string][]database.Race - 按平台分组的比赛列表, error - 错误信息
-func (h *Handler) GetAllRaces(ctx context.Context) (map[string][]database.Race, error) {
-	races, err := h.store.GetLastRace(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get races from database: %w", err)
-	}
-
-	result := map[string][]database.Race{
-		consts.RaceResourceCodeforces: {},
-		consts.RaceResourceAtcoder:    {},
-		consts.RaceResourceLeetcode:   {},
-		consts.RaceResourceLuogu:      {},
-		consts.RaceResourceNowcoder:   {},
-	}
-
-	for _, race := range races {
-		result[race.Resource] = append(result[race.Resource], race)
-	}
-
-	return result, nil
 }
 
 // GetUpcomingRaces 获取所有平台的即将开始的比赛（未来7天内）
