@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/suzmii/ACMBot/config"
+	"github.com/suzmii/ACMBot/consts"
 	"github.com/suzmii/ACMBot/database"
 	"github.com/suzmii/ACMBot/handler"
 	"github.com/suzmii/ACMBot/middleware"
@@ -177,17 +178,19 @@ func StartZeroBot(handler *handler.Handler) {
 
 		// 将中文平台名称映射到 resource 常量
 		resourceMap := map[string]string{
-			"codeforces": "codeforces.com",
-			"cf":         "codeforces.com",
-			"atcoder":    "atcoder.jp",
-			"at":         "atcoder.jp",
-			"leetcode":   "leetcode.com",
-			"lc":         "leetcode.com",
-			"力扣":         "leetcode.com",
-			"lg":         "luogu.com.cn",
-			"洛谷":         "luogu.com.cn",
-			"nk":         "ac.nowcoder.com",
-			"牛客":         "ac.nowcoder.com",
+			"力扣": consts.RaceResourceLeetcode,
+			"洛谷": consts.RaceResourceLuogu,
+			"牛客": consts.RaceResourceNowcoder,
+
+			"codeforces": consts.RaceResourceCodeforces,
+			"cf":         consts.RaceResourceCodeforces,
+			"atcoder":    consts.RaceResourceAtcoder,
+			"at":         consts.RaceResourceAtcoder,
+			"atc":        consts.RaceResourceAtcoder,
+			"leetcode":   consts.RaceResourceLeetcode,
+			"lc":         consts.RaceResourceLeetcode,
+			"lg":         consts.RaceResourceLuogu,
+			"nk":         consts.RaceResourceNowcoder,
 		}
 
 		// 解析页码
