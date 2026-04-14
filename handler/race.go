@@ -18,10 +18,12 @@ func (h *Handler) GetUpcomingRace(ctx context.Context, resource string) ([]datab
 		return nil, fmt.Errorf("resource cannot be empty")
 	}
 
-	races, err := h.store.GetLastRace(ctx)
+	allRaces, err := h.GetAllRaces(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get races from database: %w", err)
 	}
+
+	races := allRaces[resource]
 
 	// filter
 	races = slices.DeleteFunc(races, func(race database.Race) bool {
@@ -39,21 +41,21 @@ func (h *Handler) GetUpcomingRace(ctx context.Context, resource string) ([]datab
 // 输入: 无
 // 输出: map[string][]database.Race - 按平台分组的比赛列表, error - 错误信息
 func (h *Handler) GetAllRaces(ctx context.Context) (map[string][]database.Race, error) {
-	resources := []string{
-		consts.RaceResourceCodeforces,
-		consts.RaceResourceAtcoder,
-		consts.RaceResourceLeetcode,
-		consts.RaceResourceLuogu,
-		consts.RaceResourceNowcoder,
+	races, err := h.store.GetLastRace(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get races from database: %w", err)
 	}
 
-	result := make(map[string][]database.Race)
-	for _, resource := range resources {
-		races, err := h.GetUpcomingRace(ctx, resource)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get races for resource %s: %w", resource, err)
-		}
-		result[resource] = races
+	result := map[string][]database.Race{
+		consts.RaceResourceCodeforces: {},
+		consts.RaceResourceAtcoder:    {},
+		consts.RaceResourceLeetcode:   {},
+		consts.RaceResourceLuogu:      {},
+		consts.RaceResourceNowcoder:   {},
+	}
+
+	for _, race := range races {
+		result[race.Resource] = append(result[race.Resource], race)
 	}
 
 	return result, nil
