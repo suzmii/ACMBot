@@ -45,7 +45,7 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 	if err = page.SetContent(
 		content.String(),
 		playwright.PageSetContentOptions{
-			WaitUntil: playwright.WaitUntilStateNetworkidle,
+			WaitUntil: playwright.WaitUntilStateDomcontentloaded,
 		},
 	); err != nil {
 		return nil, err
