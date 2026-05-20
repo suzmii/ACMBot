@@ -15,6 +15,8 @@ import (
 
 var logger = logx.New("render-internal")
 
+const defaultPageTimeoutMs = 30_000
+
 // asInt 兼容 playwright-go 把 JS number 解码为 float64 / int / int64 的几种情况。
 func asInt(v interface{}) (int, error) {
 	switch n := v.(type) {
@@ -192,6 +194,9 @@ func New(cfg subconfig.Render) (*Render, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create playwright context: %w", err)
 	}
+	// 给 page 上一个 30s 的兜底超时，防失控页面无限占用信号量。
+	// 若调用方 ctx 带更短 deadline，RenderWithAutoSize 会按 ctx 进一步收紧。
+	playctx.SetDefaultTimeout(defaultPageTimeoutMs)
 	r.ctx = playctx
 	r.pool = NewPagePool(playctx, cfg.PoolSize)
 
