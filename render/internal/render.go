@@ -135,7 +135,7 @@ func New(cfg subconfig.Render) (*Render, error) {
 	if err := playwright.Install(&playwright.RunOptions{
 		Browsers: []string{"chromium"},
 	}); err != nil {
-		err = fmt.Errorf("Failed to install playwright: %v", err)
+		err = fmt.Errorf("failed to install playwright: %w", err)
 		logger.Error(err)
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func New(cfg subconfig.Render) (*Render, error) {
 	var err error
 	r.playwright, err = playwright.Run()
 	if err != nil {
-		err = fmt.Errorf("Failed to start playwright: %v", err)
+		err = fmt.Errorf("failed to start playwright: %w", err)
 		logger.Error(err)
 		return nil, err
 	}
@@ -155,7 +155,7 @@ func New(cfg subconfig.Render) (*Render, error) {
 		Headless: playwright.Bool(cfg.Headless),
 	})
 	if err != nil {
-		err = fmt.Errorf("Failed to start browser: %v", err)
+		err = fmt.Errorf("failed to start browser: %w", err)
 		logger.Error(err)
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func New(cfg subconfig.Render) (*Render, error) {
 	playctx, err := r.browser.NewContext(playwright.BrowserNewContextOptions{
 		DeviceScaleFactor: playwright.Float(2.0)})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create playwright context")
+		return nil, fmt.Errorf("failed to create playwright context: %w", err)
 	}
 	r.ctx = playctx
 	r.pool = NewPagePool(playctx, cfg.PoolSize)
@@ -176,7 +176,7 @@ func New(cfg subconfig.Render) (*Render, error) {
 		name := fmt.Sprintf("%v", name_)
 		tmpl, err := template.New(name).Parse(*content)
 		if err != nil {
-			err = fmt.Errorf("Failed to load template %s: %v", name, err)
+			err = fmt.Errorf("failed to load template %s: %w", name, err)
 			logger.Error(err)
 			return nil, err
 		}
