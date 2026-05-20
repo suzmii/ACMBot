@@ -35,6 +35,8 @@ type Render struct {
 	ctx        playwright.BrowserContext
 	pool       *PagePool
 
+	templates map[Template]*template.Template
+
 	closeOnce sync.Once
 	closeErr  error
 }
@@ -195,6 +197,7 @@ func New(cfg subconfig.Render) (*Render, error) {
 
 	// InitTemplates
 	logger.Info("Initializing templates")
+	r.templates = make(map[Template]*template.Template, len(templateContents))
 	for name_, content := range templateContents {
 		name := fmt.Sprintf("%v", name_)
 		tmpl, err := template.New(name).Parse(*content)
@@ -203,7 +206,7 @@ func New(cfg subconfig.Render) (*Render, error) {
 			logger.Error(err)
 			return nil, err
 		}
-		templates[name_] = tmpl
+		r.templates[name_] = tmpl
 	}
 
 	return r, nil

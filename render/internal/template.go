@@ -7,8 +7,6 @@ import (
 
 type Template int
 
-var templates = make(map[Template]*template.Template)
-
 // String 返回模板的名称
 func (t Template) String() string {
 	switch t {
@@ -51,6 +49,7 @@ var (
 	TemplateContentCodeforcesRank string
 )
 
+// templateContents 是 embed 出来的源码，只读，可在多 Render 实例间安全共享。
 var templateContents = map[Template]*string{
 	TemplateCodeforcesProfileV1:     &TemplateContentCodeforcesProfileV1,
 	TemplateCodeforcesProfileV2:     &TemplateContentCodeforcesProfileV2,
@@ -59,9 +58,9 @@ var templateContents = map[Template]*string{
 	TemplattCodeforcesRank:          &TemplateContentCodeforcesRank,
 }
 
-// GetTemplate returns a compiled template by name.
+// GetTemplate 返回该 Render 实例下编译好的模板。
 func (r *Render) GetTemplate(name Template) *template.Template {
-	tmpl, ok := templates[name]
+	tmpl, ok := r.templates[name]
 	if !ok {
 		logger.Warnf("Template %#v not found", name)
 		return nil
