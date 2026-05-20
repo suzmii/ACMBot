@@ -15,6 +15,20 @@ import (
 
 var logger = logx.New("render-internal")
 
+// asInt 兼容 playwright-go 把 JS number 解码为 float64 / int / int64 的几种情况。
+func asInt(v interface{}) (int, error) {
+	switch n := v.(type) {
+	case float64:
+		return int(n), nil
+	case int:
+		return n, nil
+	case int64:
+		return int(n), nil
+	default:
+		return 0, fmt.Errorf("expected number, got %T", v)
+	}
+}
+
 type Render struct {
 	playwright *playwright.Playwright
 	browser    playwright.Browser
@@ -91,9 +105,18 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 		return nil, err
 	}
 
-	size := result.([]interface{})
-	width := int(size[0].(float64))
-	height := int(size[1].(float64))
+	size, ok := result.([]interface{})
+	if !ok || len(size) != 2 {
+		return nil, fmt.Errorf("unexpected size result from evaluate: %#v", result)
+	}
+	width, err := asInt(size[0])
+	if err != nil {
+		return nil, fmt.Errorf("unexpected width: %w", err)
+	}
+	height, err := asInt(size[1])
+	if err != nil {
+		return nil, fmt.Errorf("unexpected height: %w", err)
+	}
 
 	if err := page.SetViewportSize(width, height); err != nil {
 		return nil, err
