@@ -97,7 +97,7 @@ func (r *Render) executeTemplate(ctx context.Context, templateName internal.Temp
 		return nil, fmt.Errorf("failed to execute template %s: %w", templateName, err)
 	}
 
-	return r.RenderWithAutoSize(ctx, buffer)
+	return r.RenderWithAutoSize(ctx, buffer.String())
 }
 
 func (r *Render) RatingDetail(ctx context.Context, records CodeforcesRatingRecords) ([]byte, error) {

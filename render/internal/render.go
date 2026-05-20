@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"html/template"
@@ -43,7 +42,7 @@ type Render struct {
 	closeErr  error
 }
 
-func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) ([]byte, error) {
+func (r *Render) RenderWithAutoSize(ctx context.Context, html string) ([]byte, error) {
 
 	if err := ctx.Err(); err != nil {
 		return nil, err
@@ -65,7 +64,7 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 	}
 
 	if err = page.SetContent(
-		content.String(),
+		html,
 		playwright.PageSetContentOptions{
 			WaitUntil: playwright.WaitUntilStateDomcontentloaded,
 		},
