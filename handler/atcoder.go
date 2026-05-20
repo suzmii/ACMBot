@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html/template"
 	"math"
 	"strings"
 	"time"
@@ -156,7 +157,7 @@ func (h *Handler) GetAtcoderUserProfileImage(ctx context.Context, username strin
 	}
 
 	renderProfile := render.AtcoderUserProfile{
-		Avatar:           user.AvatarUrl,
+		Avatar:           template.URL(user.AvatarUrl),
 		Handle:           user.Username,
 		MaxRating:        int(user.HighestRating),
 		PromotionMessage: user.PromotionMessage,

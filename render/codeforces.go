@@ -72,7 +72,7 @@ type CodeforcesUserSolvedData struct {
 }
 
 type CodeforcesUserProfile struct {
-	Avatar    string
+	Avatar    template.URL
 	Handle    string
 	MaxRating int
 	FriendOf  int
@@ -120,7 +120,7 @@ func (r *Render) ProfileV2(ctx context.Context, user CodeforcesUserProfile) ([]b
 		ctx,
 		internal.TemplateCodeforcesProfileV2,
 		&CodeforcesUserProfile{
-			Avatar:     user.Avatar,
+			Avatar:     resolveAvatar(ctx, string(user.Avatar)),
 			Handle:     user.Handle,
 			MaxRating:  user.MaxRating,
 			FriendOf:   user.FriendOf,
@@ -137,7 +137,7 @@ func (r *Render) ProfileV2(ctx context.Context, user CodeforcesUserProfile) ([]b
 type RankUser struct {
 	Rank   int
 	Handle string
-	Avatar string
+	Avatar template.URL
 	Rating int
 	Level  string
 }
@@ -152,12 +152,24 @@ type RankUsers struct {
 func (r *Render) Rank(ctx context.Context, users []RankUser) ([]byte, error) {
 	defer logx.TraceWall(logger, "Rank")()
 	logger.Trace("rendering codeforces Rank ", users)
+
+	avatarURLs := make([]string, len(users))
+	for i, u := range users {
+		avatarURLs[i] = string(u.Avatar)
+	}
+	inlined := resolveAvatars(ctx, avatarURLs)
+	resolved := make([]RankUser, len(users))
+	for i, u := range users {
+		u.Avatar = inlined[i]
+		resolved[i] = u
+	}
+
 	return r.executeTemplate(
 		ctx,
 		internal.TemplattCodeforcesRank,
 		&RankUsers{
 			Time:       time.Now(),
-			Users:      users,
+			Users:      resolved,
 			TailwindJS: internal.ResourceTailwind,
 			FontCSS:    internal.ResourceZsft184,
 		},

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html/template"
 	"math"
 	"time"
 
@@ -214,7 +215,7 @@ func (h *Handler) GetCodeforcesUserProfileImage(ctx context.Context, username st
 	logger.Tracef("GetCodeforcesUserProfileImage: maxRating=%d, currRating=%d", maxRating, currRating)
 
 	renderProfile := render.CodeforcesUserProfile{
-		Avatar:     user.AvatarUrl,
+		Avatar:     template.URL(user.AvatarUrl),
 		Handle:     user.Username,
 		MaxRating:  maxRating,
 		FriendOf:   int(user.FriendNum),

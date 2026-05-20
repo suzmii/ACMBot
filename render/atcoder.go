@@ -2,6 +2,7 @@ package render
 
 import (
 	"context"
+	"html/template"
 	"time"
 
 	"github.com/suzmii/ACMBot/render/internal"
@@ -13,7 +14,7 @@ type AtcoderUserSolvedData struct {
 }
 
 type AtcoderUserProfile struct {
-	Avatar           string
+	Avatar           template.URL
 	Handle           string
 	MaxRating        int
 	PromotionMessage string
@@ -64,7 +65,7 @@ func (r *Render) AtcoderProfile(ctx context.Context, user AtcoderUserProfile) ([
 		ctx,
 		internal.TemplateAtcoderProfile,
 		&AtcoderUserProfile{
-			Avatar:           user.Avatar,
+			Avatar:           resolveAvatar(ctx, string(user.Avatar)),
 			Handle:           user.Handle,
 			MaxRating:        user.MaxRating,
 			PromotionMessage: user.PromotionMessage,
