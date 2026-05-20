@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"html/template"
+	"time"
 
 	"github.com/playwright-community/playwright-go"
 	"github.com/suzmii/ACMBot/config/subconfig"
@@ -22,11 +23,24 @@ type Render struct {
 
 func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) ([]byte, error) {
 
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	page, err := r.pool.Acquire()
 	if err != nil {
 		return nil, fmt.Errorf("failed to acquire page: %w", err)
 	}
 	defer r.pool.Release(page)
+
+	// 把 ctx 的 deadline 投影成 playwright 调用的超时上限
+	if deadline, ok := ctx.Deadline(); ok {
+		remaining := time.Until(deadline)
+		if remaining <= 0 {
+			return nil, context.DeadlineExceeded
+		}
+		page.SetDefaultTimeout(float64(remaining.Milliseconds()))
+	}
 
 	if err = page.SetContent(
 		content.String(),
@@ -37,9 +51,17 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 		return nil, err
 	}
 
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	// 等字体、图片和布局真正稳定
 	_, err = page.Evaluate(string(ResourceRenderWaitAssets))
 	if err != nil {
+		return nil, err
+	}
+
+	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 
@@ -75,6 +97,10 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 
 	// 等 viewport resize 生效
 	_, _ = page.Evaluate(`() => new Promise(r => requestAnimationFrame(r))`)
+
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 
 	target := page.Locator("#background")
 	count, err := target.Count()
