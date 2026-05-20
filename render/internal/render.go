@@ -16,14 +16,16 @@ var logger = logx.New("render-internal")
 type Render struct {
 	playwright *playwright.Playwright
 	browser    playwright.Browser
+	ctx        playwright.BrowserContext
 	pool       *PagePool
 }
 
 func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) ([]byte, error) {
 
-	page := r.pool.Acquire()
-	var err error
-
+	page, err := r.pool.Acquire()
+	if err != nil {
+		return nil, fmt.Errorf("failed to acquire page: %w", err)
+	}
 	defer r.pool.Release(page)
 
 	if err = page.SetContent(
@@ -64,8 +66,8 @@ func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) (
 	}
 
 	size := result.([]interface{})
-	width := int(size[0].(int))
-	height := int(size[1].(int))
+	width := int(size[0].(float64))
+	height := int(size[1].(float64))
 
 	if err := page.SetViewportSize(width, height); err != nil {
 		return nil, err
@@ -135,6 +137,7 @@ func New(cfg subconfig.Render) (*Render, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create playwright context")
 	}
+	r.ctx = playctx
 	r.pool = NewPagePool(playctx, cfg.PoolSize)
 
 	// InitTemplates
@@ -151,4 +154,26 @@ func New(cfg subconfig.Render) (*Render, error) {
 	}
 
 	return r, nil
+}
+
+// Close 按相反顺序释放 context / browser / playwright。
+// 调用后 Render 不再可用。
+func (r *Render) Close() error {
+	var firstErr error
+	if r.ctx != nil {
+		if err := r.ctx.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+	if r.browser != nil {
+		if err := r.browser.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+	if r.playwright != nil {
+		if err := r.playwright.Stop(); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+	return firstErr
 }
