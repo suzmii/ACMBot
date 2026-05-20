@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"html/template"
+	"sync"
 	"time"
 
 	"github.com/playwright-community/playwright-go"
@@ -19,6 +20,9 @@ type Render struct {
 	browser    playwright.Browser
 	ctx        playwright.BrowserContext
 	pool       *PagePool
+
+	closeOnce sync.Once
+	closeErr  error
 }
 
 func (r *Render) RenderWithAutoSize(ctx context.Context, content bytes.Buffer) ([]byte, error) {
@@ -183,23 +187,24 @@ func New(cfg subconfig.Render) (*Render, error) {
 }
 
 // Close 按相反顺序释放 context / browser / playwright。
-// 调用后 Render 不再可用。
+// 可重入：多次调用安全，后续调用返回首次的错误。
 func (r *Render) Close() error {
-	var firstErr error
-	if r.ctx != nil {
-		if err := r.ctx.Close(); err != nil && firstErr == nil {
-			firstErr = err
+	r.closeOnce.Do(func() {
+		if r.ctx != nil {
+			if err := r.ctx.Close(); err != nil && r.closeErr == nil {
+				r.closeErr = err
+			}
 		}
-	}
-	if r.browser != nil {
-		if err := r.browser.Close(); err != nil && firstErr == nil {
-			firstErr = err
+		if r.browser != nil {
+			if err := r.browser.Close(); err != nil && r.closeErr == nil {
+				r.closeErr = err
+			}
 		}
-	}
-	if r.playwright != nil {
-		if err := r.playwright.Stop(); err != nil && firstErr == nil {
-			firstErr = err
+		if r.playwright != nil {
+			if err := r.playwright.Stop(); err != nil && r.closeErr == nil {
+				r.closeErr = err
+			}
 		}
-	}
-	return firstErr
+	})
+	return r.closeErr
 }
